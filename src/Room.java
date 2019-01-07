@@ -23,6 +23,9 @@ public class Room {
             field[yPosition][xPosition+width] = 1;
             field[yPosition+i][xPosition] = 1;
             field[yPosition+i][xPosition+width] = 1;
+            for(int cnt=0;cnt<width+1;cnt++){
+                field[yPosition+i][xPosition+cnt] = 1;
+            }
         }
         placed=true;
     }

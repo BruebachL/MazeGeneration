@@ -4,13 +4,26 @@ public class Crawler {
     int dir;
     int uID;
     int hasChangedDir = 0;
+    int maxSteps = 5;
+    int stepsTaken = 0;
     public Crawler(int x, int y, int dir, int id){
         this.xPos=x;
         this.yPos=y;
         this.dir=dir;
         this.uID = id;
     }
-    public void move(int[][] field,int[][]color){
+
+    public void setuID(int uID) {
+        this.uID = uID;
+    }
+    public void increaseuID(){
+        this.uID++;
+    }
+    public int getuID(){
+        return this.uID;
+    }
+
+    public void move(int[][] field, int[][]color){
         int rand = (int)Math.floor(Math.random() * Math.floor(4));
         int doesItChange = (int)Math.floor(Math.random() * Math.floor(11));
         if(doesItChange>1){
@@ -19,17 +32,23 @@ public class Crawler {
         if(hasChangedDir==20){
             boolean validBranch = false;
             while(!validBranch) {
-                this.xPos = (int) Math.floor(Math.random() * Math.floor(40));
-                this.yPos = (int) Math.floor(Math.random() * Math.floor(18));
+                this.xPos = (int) Math.floor(Math.random() * Math.floor(field[0].length));
+                this.yPos = (int) Math.floor(Math.random() * Math.floor(field.length));
                 hasChangedDir = 0;
-                if(field[this.yPos][this.xPos]==1){
+                if(field[this.yPos][this.xPos]==1&&color[this.yPos][this.xPos]!=0){
                     validBranch=true;
+                    if(this.uID==4){
+                        this.uID=1;
+                    }else {
+                        this.uID++;
+                    }
+                    this.move(field,color);
                 }
             }
         }else {
             switch (dir) {
                 case 0:
-                    if (xPos + 2 <= field.length - 1 && yPos - 1 >= 0) {
+                    if (xPos + 2 <= field[0].length - 1 && yPos - 1 >= 0) {
                         if (field[yPos][xPos + 1] == 0 && field[yPos][xPos + 2] != 1 && field[yPos + 1][xPos + 1] != 1 && field[yPos - 1][xPos + 1] != 1 && field[yPos + 1][xPos + 2] != 1 && field[yPos - 1][xPos + 2] != 1) {
                             field[yPos][xPos + 1] = 1;
                             this.xPos++;
@@ -88,6 +107,12 @@ public class Crawler {
                     }
 
             }
+        }
+        if(stepsTaken==maxSteps){
+            hasChangedDir=20;
+            stepsTaken=0;
+        }else{
+            stepsTaken++;
         }
     }
 }

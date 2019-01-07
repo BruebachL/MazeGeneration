@@ -1,30 +1,59 @@
 import java.util.concurrent.TimeUnit;
 
 public class MazeGenerator {
-    public static void main(String[] args) throws Exception{
-        int[][] field = new int[20][50];
-        int[][] color = new int[20][50];
-        Room test = new Room(3,3,3,3,1);
-        Room tester = new Room(20,10,7,7,1);
-        //test.placeRoom(field);
-        //tester.placeRoom(field);
-        Crawler first = new Crawler(1,1,0,1);
-        Crawler second = new Crawler(40,10,0,2);
-        Crawler third = new Crawler(25,18,0,3);
-        Crawler fourth = new Crawler(48,1,0,4);
-        for(int i =0;i<500;i++) {
-            first.move(field,color);
-            second.move(field,color);
-            third.move(field,color);
-            fourth.move(field,color);
-
-
-            //TimeUnit.MILLISECONDS.sleep(500);
+    public static void main(String[] args) throws Exception {
+        int[][] field = new int[50][400];
+        int[][] color = new int[50][400];
+        Room test = new Room(50, 20, 10, 30, 1);
+        Room tester = new Room(20, 10, 7, 7, 1);
+        test.placeRoom(field);
+        tester.placeRoom(field);
+        Runner runner = new Runner(1,1);
+        Crawler first = new Crawler(1, 1, 0, 1);
+        Crawler second = new Crawler(48, 38, 0, 2);
+        Crawler third = new Crawler(1, 38, 0, 3);
+        Crawler fourth = new Crawler(48, 1, 0, 4);
+        for (int i = 0; i < 200000; i++) {
+            first.move(field, color);
+            //second.move(field, color);
+            //third.move(field, color);
+            //fourth.move(field, color);
             //TimeUnit.SECONDS.sleep(1);
+            /*if(i<1000) {
+                if (i % 50 == 0) {
+                    printField(field, color, runner);
+                    TimeUnit.MILLISECONDS.sleep(500);
+                    if(first.getuID()==4){
+                        first.setuID(1);
+                    }else{
+                        first.increaseuID();
+                    }
+                }
+            }else{
+                if (i % 1000==0){
+                    printField(field, color, runner);
+                    TimeUnit.MILLISECONDS.sleep(500);
+                    if(first.getuID()==4){
+                        first.setuID(1);
+                    }else{
+                        first.increaseuID();
+                    }
+                }
+            }*/
 
         }
-        printField(field,color);
+        connector(field, color);
+        printField(field, color,runner);
+        /*while(runner.xPosition<30&&runner.yPosition<20){
+            runner.decideWhichWay(field);
+            printField(field, color,runner);
+            TimeUnit.MILLISECONDS.sleep(100);
+        }*/
+
+
+
     }
+
     public static final String ANSI_RESET = "\u001B[0m";
     public static final String ANSI_BLACK = "\u001B[30m";
     public static final String ANSI_RED = "\u001B[31m";
@@ -34,29 +63,56 @@ public class MazeGenerator {
     public static final String ANSI_PURPLE = "\u001B[35m";
     public static final String ANSI_CYAN = "\u001B[36m";
     public static final String ANSI_WHITE = "\u001B[37m";
-    public static void colorPicker(int[][] color, int i, int cnt){
-        switch (color[i][cnt]){
-            case 0: System.out.print(ANSI_RESET);
-            break;
-            case 1: System.out.print(ANSI_RED);
-            break;
-            case 2: System.out.print(ANSI_YELLOW);
-            break;
-            case 3: System.out.print(ANSI_GREEN);
-            break;
-            case 4: System.out.print(ANSI_CYAN);
-            break;
+
+    public static void connector(int[][] field, int[][] color) {
+        for (int i = 0; i < field.length; i++) {
+            System.out.println("Checking row:" + i);
+            for (int cnt = 0; cnt < field[0].length; cnt++) {
+                System.out.println("Checking column:" + cnt);
+                if (cnt + 1 <= field.length && cnt - 1 >= 0 && field[i][cnt] == 0 &&  field[i][cnt + 1] == 1 &&  field[i][cnt - 1] == 1&&color[i][cnt-1]!=color[i][cnt+1]) {
+                    int rand = (int) Math.floor(Math.random() * Math.floor(101));
+                    if (rand > 75) {
+                        field[i][cnt] = 1;
+                    }
+                }
+            }
+        }
+        System.out.println("Done");
+    }
+
+    public static void colorPicker(int[][] color, int i, int cnt) {
+        switch (color[i][cnt]) {
+            case 0:
+                System.out.print(ANSI_RESET);
+                break;
+            case 1:
+                System.out.print(ANSI_RED);
+                break;
+            case 2:
+                System.out.print(ANSI_BLUE);
+                break;
+            case 3:
+                System.out.print(ANSI_GREEN);
+                break;
+            case 4:
+                System.out.print(ANSI_CYAN);
+                break;
         }
     }
-    public static void printField(int[][] field,int[][] color){
-        for (int i=0; i<field.length;i++) {
-            for(int cnt=0;cnt<field[0].length;cnt++){
-                colorPicker(color, i, cnt);
-                if(field[i][cnt]==1){
-                    System.out.print("O ");
-                }else {
-                    System.out.print("  ");
-                }
+
+    public static void printField(int[][] field, int[][] color, Runner runner) {
+        for (int i = 0; i < field.length; i++) {
+            for (int cnt = 0; cnt < field[0].length; cnt++) {
+                /*if(runner.yPosition==i&&runner.xPosition==cnt){
+                    System.out.print("X ");
+                }else {*/
+                    colorPicker(color, i, cnt);
+                    if (field[i][cnt] == 1) {
+                        System.out.print("  ");
+                    } else {
+                        System.out.print("O ");
+                    }
+
             }
             System.out.println();
         }
