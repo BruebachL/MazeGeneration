@@ -6,31 +6,33 @@ public class MazeGenerator {
         int[][] color = new int[30][100];
         Room test = new Room(50, 19, 10, 30, 1);
         Room tester = new Room(20, 10, 7, 7, 1);
-        test.placeRoom(field);
-        tester.placeRoom(field);
+        //test.placeRoom(field);
+        //  tester.placeRoom(field);
         Runner runner = new Runner(field, 1, 1);
         Crawler first = new Crawler(1, 1, 0, 1);
         Crawler second = new Crawler(48, 38, 0, 2);
         Crawler third = new Crawler(1, 38, 0, 3);
         Crawler fourth = new Crawler(48, 1, 0, 4);
+        boolean displayGeneration = false;
         for (int i = 0; i < 500000; i++) {
             first.move(field, color);
             //second.move(field, color);
             //third.move(field, color);
             //fourth.move(field, color);
             //TimeUnit.SECONDS.sleep(1);
-            /*if(i<1000) {
-                if (i % 50 == 0) {
-                    printField(field, color, runner);
-                    TimeUnit.MILLISECONDS.sleep(500);
+            if(displayGeneration) {
+                if (i < 1000) {
+                    if (i % 50 == 0) {
+                        printField(field, color, runner);
+                        TimeUnit.MILLISECONDS.sleep(500);
+                    }
+                } else {
+                    if (i % 1000 == 0) {
+                        printField(field, color, runner);
+                        TimeUnit.MILLISECONDS.sleep(500);
+                    }
                 }
-            }else{
-                if (i % 1000==0){
-                    printField(field, color, runner);
-                    TimeUnit.MILLISECONDS.sleep(500);
-                }
-            }*/
-
+            }
         }
         connector(field, color);
         printField(field, color, runner);
@@ -93,16 +95,16 @@ public class MazeGenerator {
         for (int i = 0; i < field.length; i++) {
             for (int cnt = 0; cnt < field[0].length; cnt++) {
                 if (runner.yPosition == i && runner.xPosition == cnt) {
-                    System.out.print("X ");
+                    System.out.print("O ");
                 } else {
                     colorPicker(color, i, cnt);
                     if (field[i][cnt] == 1) {
                         System.out.print("  ");
                     } else {
                         if (field[i][cnt] == 6) {
-                            System.out.print("- ");
+                            System.out.print("o ");
                         } else {
-                            System.out.print("O ");
+                            System.out.print("+ ");
                         }
 
                     }
