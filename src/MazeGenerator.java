@@ -2,18 +2,18 @@ import java.util.concurrent.TimeUnit;
 
 public class MazeGenerator {
     public static void main(String[] args) throws Exception {
-        int[][] field = new int[50][400];
-        int[][] color = new int[50][400];
-        Room test = new Room(50, 20, 10, 30, 1);
+        int[][] field = new int[30][100];
+        int[][] color = new int[30][100];
+        Room test = new Room(50, 19, 10, 30, 1);
         Room tester = new Room(20, 10, 7, 7, 1);
         test.placeRoom(field);
         tester.placeRoom(field);
-        Runner runner = new Runner(1,1);
+        Runner runner = new Runner(field, 1, 1);
         Crawler first = new Crawler(1, 1, 0, 1);
         Crawler second = new Crawler(48, 38, 0, 2);
         Crawler third = new Crawler(1, 38, 0, 3);
         Crawler fourth = new Crawler(48, 1, 0, 4);
-        for (int i = 0; i < 200000; i++) {
+        for (int i = 0; i < 500000; i++) {
             first.move(field, color);
             //second.move(field, color);
             //third.move(field, color);
@@ -23,33 +23,24 @@ public class MazeGenerator {
                 if (i % 50 == 0) {
                     printField(field, color, runner);
                     TimeUnit.MILLISECONDS.sleep(500);
-                    if(first.getuID()==4){
-                        first.setuID(1);
-                    }else{
-                        first.increaseuID();
-                    }
                 }
             }else{
                 if (i % 1000==0){
                     printField(field, color, runner);
                     TimeUnit.MILLISECONDS.sleep(500);
-                    if(first.getuID()==4){
-                        first.setuID(1);
-                    }else{
-                        first.increaseuID();
-                    }
                 }
             }*/
 
         }
         connector(field, color);
-        printField(field, color,runner);
-        /*while(runner.xPosition<30&&runner.yPosition<20){
+        printField(field, color, runner);
+        while (runner.xPosition < 80 && runner.yPosition < 29) {
             runner.decideWhichWay(field);
-            printField(field, color,runner);
-            TimeUnit.MILLISECONDS.sleep(100);
-        }*/
-
+            /*printField(field, color, runner);
+            TimeUnit.MILLISECONDS.sleep(500);*/
+        }
+        field = runner.resolve(field);
+        printField(field, color, runner);
 
 
     }
@@ -66,10 +57,8 @@ public class MazeGenerator {
 
     public static void connector(int[][] field, int[][] color) {
         for (int i = 0; i < field.length; i++) {
-            System.out.println("Checking row:" + i);
             for (int cnt = 0; cnt < field[0].length; cnt++) {
-                System.out.println("Checking column:" + cnt);
-                if (cnt + 1 <= field.length && cnt - 1 >= 0 && field[i][cnt] == 0 &&  field[i][cnt + 1] == 1 &&  field[i][cnt - 1] == 1&&color[i][cnt-1]!=color[i][cnt+1]) {
+                if (cnt + 1 <= field.length && cnt - 1 >= 0 && field[i][cnt] == 0 && field[i][cnt + 1] == 1 && field[i][cnt - 1] == 1 && color[i][cnt - 1] != color[i][cnt + 1]) {
                     int rand = (int) Math.floor(Math.random() * Math.floor(101));
                     if (rand > 75) {
                         field[i][cnt] = 1;
@@ -103,18 +92,24 @@ public class MazeGenerator {
     public static void printField(int[][] field, int[][] color, Runner runner) {
         for (int i = 0; i < field.length; i++) {
             for (int cnt = 0; cnt < field[0].length; cnt++) {
-                /*if(runner.yPosition==i&&runner.xPosition==cnt){
+                if (runner.yPosition == i && runner.xPosition == cnt) {
                     System.out.print("X ");
-                }else {*/
+                } else {
                     colorPicker(color, i, cnt);
                     if (field[i][cnt] == 1) {
                         System.out.print("  ");
                     } else {
-                        System.out.print("O ");
-                    }
+                        if (field[i][cnt] == 6) {
+                            System.out.print("- ");
+                        } else {
+                            System.out.print("O ");
+                        }
 
+                    }
+                }
             }
             System.out.println();
         }
     }
 }
+
