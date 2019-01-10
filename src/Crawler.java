@@ -4,8 +4,10 @@ public class Crawler {
     int dir;
     int uID;
     int hasChangedDir = 0;
-    int maxSteps = 5;
+    int maxSteps = 150;
     int stepsTaken = 0;
+    int furthestX = 0;
+    int furthestY = 0;
     public Crawler(int x, int y, int dir, int id){
         this.xPos=x;
         this.yPos=y;
@@ -32,8 +34,8 @@ public class Crawler {
         if(hasChangedDir==20){
             boolean validBranch = false;
             while(!validBranch) {
-                this.xPos = (int) Math.floor(Math.random() * Math.floor(field[0].length));
-                this.yPos = (int) Math.floor(Math.random() * Math.floor(field.length));
+                this.xPos = ((int) Math.floor(Math.random() * (Math.floor(furthestX)+1)));
+                this.yPos = ((int) Math.floor(Math.random() * (Math.floor(furthestY)+1)));
                 hasChangedDir = 0;
                 if(field[this.yPos][this.xPos]==1&&color[this.yPos][this.xPos]!=0){
                     validBranch=true;
@@ -45,13 +47,22 @@ public class Crawler {
                     this.move(field,color);
                 }
             }
+            stepsTaken=0;
         }else {
             switch (dir) {
                 case 0:
-                    if (xPos + 2 <= field[0].length - 1 && yPos - 1 >= 0) {
+                    if (xPos + 2 <= field[0].length-1 && yPos - 2 >= 0 && yPos + 1 <= field.length) {
                         if (field[yPos][xPos + 1] == 0 && field[yPos][xPos + 2] != 1 && field[yPos + 1][xPos + 1] != 1 && field[yPos - 1][xPos + 1] != 1 && field[yPos + 1][xPos + 2] != 1 && field[yPos - 1][xPos + 2] != 1) {
                             field[yPos][xPos + 1] = 1;
-                            this.xPos++;
+                            if(this.xPos+1<field[0].length) {
+                                this.xPos++;
+                            }
+                            if(this.xPos>furthestX){
+                                furthestX=this.xPos;
+                            }
+                            if(this.yPos>furthestY){
+                                furthestY=this.yPos;
+                            }
                             color[yPos][xPos]=this.uID;
                             hasChangedDir = 0;
                             break;
@@ -66,6 +77,12 @@ public class Crawler {
                         if (field[yPos + 1][xPos] == 0 && field[yPos + 2][xPos] != 1 && field[yPos + 1][xPos + 1] != 1 && field[yPos + 1][xPos - 1] != 1 && field[yPos + 2][xPos + 1] != 1 && field[yPos + 2][xPos - 1] != 1) {
                             field[yPos + 1][xPos] = 1;
                             this.yPos++;
+                            if(this.xPos>furthestX){
+                                furthestX=this.xPos;
+                            }
+                            if(this.yPos>furthestY){
+                                furthestY=this.yPos;
+                            }
                             color[yPos][xPos]=this.uID;
                             hasChangedDir = 0;
                             break;
@@ -77,10 +94,16 @@ public class Crawler {
                         }
                     }
                 case 2:
-                    if (xPos - 1 >= 1&&yPos-1>=0) {
+                    if (xPos - 2 >= 1&&yPos-1>=0&&yPos + 2 <= field.length) {
                         if (field[yPos][xPos - 1] == 0 && field[yPos][xPos - 2] != 1 && field[yPos + 1][xPos - 1] != 1 && field[yPos - 1][xPos - 1] != 1 && field[yPos + 1][xPos - 2] != 1 && field[yPos - 1][xPos - 2] != 1) {
                             field[yPos][xPos - 1] = 1;
                             this.xPos--;
+                            if(this.xPos>furthestX){
+                                furthestX=this.xPos;
+                            }
+                            if(this.yPos>furthestY){
+                                furthestY=this.yPos;
+                            }
                             color[yPos][xPos]=this.uID;
                             hasChangedDir = 0;
                             break;
@@ -96,6 +119,12 @@ public class Crawler {
                         if (field[yPos - 1][xPos] == 0 && field[yPos - 2][xPos] != 1 && field[yPos - 1][xPos + 1] != 1 && field[yPos - 1][xPos - 1] != 1 && field[yPos - 2][xPos + 1] != 1 && field[yPos - 2][xPos - 1] != 1) {
                             field[yPos - 1][xPos] = 1;
                             this.yPos--;
+                            if(this.xPos>furthestX){
+                                furthestX=this.xPos;
+                            }
+                            if(this.yPos>furthestY){
+                                furthestY=this.yPos;
+                            }
                             color[yPos][xPos]=this.uID;
                             hasChangedDir = 0;
                             break;

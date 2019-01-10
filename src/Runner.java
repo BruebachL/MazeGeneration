@@ -11,7 +11,6 @@ public class Runner {
     public void recurse(int[][] maze){
         while(!unvisitedNearby(maze)){
             String coordinates = stack.getLast().toString();
-            System.out.println(coordinates);
             String[]coordinateSys = coordinates.split(" ");
             this.xPosition = Integer.parseInt(coordinateSys[0]);
             this.yPosition = Integer.parseInt(coordinateSys[1]);
@@ -29,18 +28,14 @@ public class Runner {
                 if (maze[yPosition + 1][xPosition] == 1 && visited[yPosition + 1][xPosition] != 1) {
                     return true;
                 } else {
-                    if (maze[yPosition][xPosition - 1] == 1 && visited[yPosition][xPosition - 1] != 1) {
-                        return true;
-                    }
+                    return maze[yPosition][xPosition - 1] == 1 && visited[yPosition][xPosition - 1] != 1;
                 }
             }
         }
-        return false;
     }
     public int[][] resolve(int[][] maze){
         while(!stack.isEmpty()){
             String coordinates = stack.getLast().toString();
-            System.out.println(coordinates);
             String[]coordinateSys = coordinates.split(" ");
             maze[Integer.parseInt(coordinateSys[1])][Integer.parseInt(coordinateSys[0])]=6;
             stack.removeLast();
