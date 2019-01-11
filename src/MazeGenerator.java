@@ -5,8 +5,8 @@ import java.util.concurrent.TimeUnit;
 
 public class MazeGenerator extends JComponent {
     private static int roomAmount = 25;
-    private static int mazeHeight = 1080;
-    private static int mazeWidth = 1920;
+    public static int mazeHeight = 1080;
+    public static int mazeWidth = 1920;
     private static int[][] field = new int[mazeHeight][mazeWidth];
     private static int[][] color = new int[mazeHeight][mazeWidth];
     private static Runner runner = new Runner(field, 1, 1);
@@ -34,10 +34,13 @@ public class MazeGenerator extends JComponent {
         frame.getContentPane().add(new MazeGenerator());
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
-        //Room[] rooms = generateRooms();
-        //placeRooms(rooms);
+        Room[] rooms = generateRooms();
+        placeRooms(rooms);
 
         Crawler first = new Crawler(1, 1, 0, 1);
+        Crawler second = new Crawler(1, mazeHeight-2, 0, 1);
+        Crawler third = new Crawler(mazeWidth-2, 1, 0, 1);
+        Crawler fourth = new Crawler(mazeWidth-2, mazeHeight-2, 0, 1);
         boolean filled = false;
         int debug = 0;
         int safetyPasses = 0;
@@ -45,21 +48,22 @@ public class MazeGenerator extends JComponent {
             System.out.println("Pass number: " + (debug + 1));
             for (int i = 0; i < 5000000; i++) {
                 first.move(field, color);
-                //second.move(field, color);
-                //third.move(field, color);
-                //fourth.move(field, color);
+                second.move(field, color);
+                third.move(field, color);
+                fourth.move(field, color);
             }
             frame.repaint();
             System.out.println(first.furthestX + " " + first.furthestY);
             if(first.furthestX==mazeWidth-2&&first.furthestY==mazeHeight-2){
                 safetyPasses++;
             }
-            if(safetyPasses==5){
+            safetyPasses++;
+            if(safetyPasses>2){
                 filled=true;
             }
         }
         System.out.println("Generated");
-        //connector(field, color);
+        connector(field, color);
         int exit = (int) Math.floor(Math.random() * Math.floor(field.length));
         boolean validExit = false;
         while(!validExit) {
@@ -67,6 +71,7 @@ public class MazeGenerator extends JComponent {
                 field[exit][field[0].length - 1] = 1;
                 validExit=true;
             }
+            exit = (int) Math.floor(Math.random() * Math.floor(field.length));
         }
         frame.repaint();
         while (runner.xPosition <= field[0].length - 2) {
@@ -106,6 +111,8 @@ public class MazeGenerator extends JComponent {
                             break;
                         }else{
                             mazeWidth=newWidth;
+                            field = new int[mazeHeight][mazeWidth];
+                            color = new int[mazeHeight][mazeWidth];
                             break;
                         }
                     }
@@ -167,25 +174,25 @@ public class MazeGenerator extends JComponent {
     public static Room[] generateRooms() {
         Room[] rooms = new Room[roomAmount];
         for (int i = 0; i < roomAmount; i++) {
-            rooms[i] = new Room(50, 19, 10, 30, 1, i);
+            rooms[i] = new Room((int)(Math.random()*mazeWidth), (int)(Math.random()*mazeHeight), (int)(Math.random()*(mazeWidth/20)), (int)(Math.random()*(mazeHeight/20)), 1, i);
         }
         return rooms;
     }
 
     public static void connector(int[][] field, int[][] color) {
-        int exit = (int) Math.floor(Math.random() * Math.floor(field.length));
-        field[exit][field[0].length] = 1;
+        //int exit = (int) Math.floor(Math.random() * Math.floor(field.length));
+        //field[exit][field[0].length] = 1;
         for (int i = 0; i < field.length; i++) {
             for (int cnt = 0; cnt < field[0].length; cnt++) {
                 if (cnt + 1 < field[0].length && cnt - 1 >= 0 && field[i][cnt] == 0 && field[i][cnt + 1] == 1 && field[i][cnt - 1] == 1 && color[i][cnt - 1] != color[i][cnt + 1]) {
                     int rand = (int) Math.floor(Math.random() * Math.floor(101));
-                    if (rand > 75) {
+                    if (rand > 95) {
                         field[i][cnt] = 1;
                     }
                 }
             }
         }
-        System.out.println("Done");
+        System.out.println("Connected");
     }
 }
 

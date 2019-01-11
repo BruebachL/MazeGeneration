@@ -34,8 +34,8 @@ public class Crawler {
         if(hasChangedDir==20){
             boolean validBranch = false;
             while(!validBranch) {
-                this.xPos = ((int) Math.floor(Math.random() * (Math.floor(furthestX)+1)));
-                this.yPos = ((int) Math.floor(Math.random() * (Math.floor(furthestY)+1)));
+                this.xPos = ((int) Math.floor(Math.random() * (Math.floor(MazeGenerator.mazeWidth-2)+1)));
+                this.yPos = ((int) Math.floor(Math.random() * (Math.floor(MazeGenerator.mazeHeight-2)+1)));
                 hasChangedDir = 0;
                 if(field[this.yPos][this.xPos]==1&&color[this.yPos][this.xPos]!=0){
                     validBranch=true;
