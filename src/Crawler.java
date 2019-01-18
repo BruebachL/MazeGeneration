@@ -1,3 +1,5 @@
+import java.util.concurrent.TimeUnit;
+
 public class Crawler {
     int xPos;
     int yPos;
@@ -28,7 +30,7 @@ public class Crawler {
     public void move(int[][] field, int[][]color){
         int rand = (int)Math.floor(Math.random() * Math.floor(4));
         int doesItChange = (int)Math.floor(Math.random() * Math.floor(11));
-        if(doesItChange>1){
+        if(doesItChange>8){
             dir=rand;
         }
         if(hasChangedDir==20){
@@ -143,5 +145,65 @@ public class Crawler {
         }else{
             stepsTaken++;
         }
+    }
+    public void removeLoops (int[][] field,int[][] color, int y, int x,int startUID){
+        boolean sameRoom = false;
+        boolean differentRoom = false;
+        while(color[y][x]!=startUID) {
+            if (field[y - 1][x] == 1) {
+                y--;
+            } else {
+                if (field[y + 1][x] == 1) {
+                    y++;
+                } else {
+                    if (field[y][x + 1] == 1) {
+                        x++;
+                    } else {
+                        if (field[y][x - 1] == 1) {
+                            x--;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    public void removeDeadEnds(int[][]field, int y, int x) throws InterruptedException {
+        while(checkWalls(field,y,x)==3) {
+            if (field[y - 1][x] == 1) {
+                field[y][x] = 0;
+                y--;
+            } else {
+                if (field[y + 1][x] == 1) {
+                    field[y][x] = 0;
+                    y++;
+                } else {
+                    if (field[y][x + 1] == 1) {
+                        field[y][x] = 0;
+                        x++;
+                    } else {
+                        if (field[y][x - 1] == 1) {
+                            field[y][x] = 0;
+                            x--;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    public int checkWalls(int[][] field,int y, int x){
+        int walls = 0;
+        if (field[y - 1][x] == 0 ){
+            walls++;
+        }
+        if (field[y + 1][x] == 0 ){
+            walls++;
+        }
+        if (field[y][x+1] == 0 ){
+            walls++;
+        }
+        if (field[y][x-1] == 0 ){
+            walls++;
+        }
+        return walls;
     }
 }
