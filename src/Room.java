@@ -1,13 +1,13 @@
-public class Room {
+class Room {
     int xPosition;
     int yPosition;
     int height;
     int width;
-    int doors;
-    int uID;
-    boolean placed=false;
+    private int doors;
+    private int uID;
+    private boolean placed=false;
 
-    public Room(int xPos, int yPos, int h, int w, int d, int uID){
+    Room(int xPos, int yPos, int h, int w, int d, int uID){
         this.xPosition=xPos;
         this.yPosition=yPos;
         this.height=h;
@@ -15,7 +15,7 @@ public class Room {
         this.doors=d;
         this.uID = uID;
     }
-    public void placeRoom(int[][] field, int[][] color){
+    void placeRoom(int[][] field, int[][] color){
         for(int i=0;i<width+1;i++){
             field[yPosition][xPosition+i] = 1;
             field[yPosition+height][xPosition+i] = 1;
@@ -38,7 +38,7 @@ public class Room {
         }
         placed=true;
     }
-    public boolean checkRoom(int[][] field, int[][] color){
+    boolean checkRoom(int[][] field, int[][] color){
         if(xPosition+width>field[0].length-2||yPosition+height>field.length-2){
             return false;
         }
