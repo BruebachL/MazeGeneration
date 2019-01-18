@@ -1,14 +1,14 @@
 import java.util.ArrayDeque;
 import java.util.Deque;
 
-public class Runner {
+class Runner {
     int xPosition;
     int yPosition;
-    String heading = "north";
-    int[][] visited;
-    Deque stack = new ArrayDeque();
+    private String heading = "north";
+    private int[][] visited;
+    private Deque stack = new ArrayDeque();
 
-    public void recurse(int[][] maze){
+    private void recurse(int[][] maze){
         while(!unvisitedNearby(maze)){
             String coordinates = stack.getLast().toString();
             String[]coordinateSys = coordinates.split(" ");
@@ -17,7 +17,7 @@ public class Runner {
             stack.removeLast();
         }
     }
-    public boolean unvisitedNearby(int[][] maze) {
+    private boolean unvisitedNearby(int[][] maze) {
         if (maze[yPosition - 1][xPosition] == 1 && visited[yPosition - 1][xPosition] != 1) {
             return true;
         } else {

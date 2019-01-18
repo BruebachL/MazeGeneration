@@ -1,13 +1,12 @@
 import javax.swing.*;
 import java.awt.*;
-import java.sql.Time;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
 public class MazeGenerator extends JComponent {
     private static int roomAmount = 20;
-    public static int mazeHeight = 500;
-    public static int mazeWidth = 500;
+    static int mazeHeight = 500;
+    static int mazeWidth = 500;
     private static int[][] field = new int[mazeHeight][mazeWidth];
     private static int[][] color = new int[mazeHeight][mazeWidth];
     private static Runner runner = new Runner(field, 1, 1);
@@ -289,7 +288,7 @@ public class MazeGenerator extends JComponent {
 
     }
 
-    public static void placeRooms(Room[] rooms) {
+    private static void placeRooms(Room[] rooms) {
         for (int i = 0; i < rooms.length; i++) {
             System.out.println("Placing Room " + i + " at " + rooms[i].xPosition + " and " + rooms[i].yPosition + " with height " + rooms[i].height + " and width " + rooms[i].width);
             if (rooms[i].checkRoom(field, color)) {
@@ -298,7 +297,7 @@ public class MazeGenerator extends JComponent {
         }
     }
 
-    public static Room[] generateRooms() {
+    private static Room[] generateRooms() {
         Room[] rooms = new Room[roomAmount];
         for (int i = 0; i < roomAmount; i++) {
             int dimensions = (int) (Math.random() * (mazeWidth / 5)) + 20;
