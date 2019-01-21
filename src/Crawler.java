@@ -30,7 +30,7 @@ public class Crawler {
     public void move(int[][] field, int[][]color){
         int rand = (int)Math.floor(Math.random() * Math.floor(4));
         int doesItChange = (int)Math.floor(Math.random() * Math.floor(11));
-        if(doesItChange>8){
+        if(doesItChange>3){
             dir=rand;
         }
         if(hasChangedDir==20){
@@ -39,13 +39,8 @@ public class Crawler {
                 this.xPos = ((int) Math.floor(Math.random() * (Math.floor(MazeGenerator.mazeWidth-2)+1)));
                 this.yPos = ((int) Math.floor(Math.random() * (Math.floor(MazeGenerator.mazeHeight-2)+1)));
                 hasChangedDir = 0;
-                if(field[this.yPos][this.xPos]==1&&color[this.yPos][this.xPos]!=0){
+                if(field[this.yPos][this.xPos]==1&&color[this.yPos][this.xPos]==1){
                     validBranch=true;
-                    if(this.uID==4){
-                        this.uID=1;
-                    }else {
-                        this.uID++;
-                    }
                     this.move(field,color);
                 }
             }
@@ -53,7 +48,7 @@ public class Crawler {
         }else {
             switch (dir) {
                 case 0:
-                    if (xPos + 2 <= field[0].length-1 && yPos - 2 >= 0 && yPos + 1 <= field.length) {
+                    if (xPos + 3 <= field[0].length-1 && yPos - 3 >= 0 && yPos + 3 <= field.length) {
                         if (field[yPos][xPos + 1] == 0 && field[yPos][xPos + 2] != 1 && field[yPos + 1][xPos + 1] != 1 && field[yPos - 1][xPos + 1] != 1 && field[yPos + 1][xPos + 2] != 1 && field[yPos - 1][xPos + 2] != 1) {
                             field[yPos][xPos + 1] = 1;
                             if(this.xPos+1<field[0].length) {
@@ -75,7 +70,7 @@ public class Crawler {
                         }
                     }
                 case 1:
-                    if (yPos + 2 <= field.length - 1 && xPos - 1 >= 0) {
+                    if (yPos + 3 <= field.length && xPos + 3 <= field[0].length) {
                         if (field[yPos + 1][xPos] == 0 && field[yPos + 2][xPos] != 1 && field[yPos + 1][xPos + 1] != 1 && field[yPos + 1][xPos - 1] != 1 && field[yPos + 2][xPos + 1] != 1 && field[yPos + 2][xPos - 1] != 1) {
                             field[yPos + 1][xPos] = 1;
                             this.yPos++;
@@ -96,7 +91,7 @@ public class Crawler {
                         }
                     }
                 case 2:
-                    if (xPos - 2 >= 1&&yPos-1>=0&&yPos + 2 <= field.length) {
+                    if (xPos - 3 >= 1&&yPos-3>=1&&yPos + 3 <= field.length) {
                         if (field[yPos][xPos - 1] == 0 && field[yPos][xPos - 2] != 1 && field[yPos + 1][xPos - 1] != 1 && field[yPos - 1][xPos - 1] != 1 && field[yPos + 1][xPos - 2] != 1 && field[yPos - 1][xPos - 2] != 1) {
                             field[yPos][xPos - 1] = 1;
                             this.xPos--;
@@ -117,7 +112,7 @@ public class Crawler {
                         }
                     }
                 case 3:
-                    if (yPos - 2 >= 1&&xPos-1>=0) {
+                    if (yPos - 3 >= 0&&xPos-3>=0) {
                         if (field[yPos - 1][xPos] == 0 && field[yPos - 2][xPos] != 1 && field[yPos - 1][xPos + 1] != 1 && field[yPos - 1][xPos - 1] != 1 && field[yPos - 2][xPos + 1] != 1 && field[yPos - 2][xPos - 1] != 1) {
                             field[yPos - 1][xPos] = 1;
                             this.yPos--;

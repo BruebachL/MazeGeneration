@@ -4,9 +4,10 @@ import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
 public class MazeGenerator extends JComponent {
-    private static int roomAmount = 20;
-    static int mazeHeight = 500;
-    static int mazeWidth = 500;
+    private static int roomAmount = 250;
+    static int roomsPlaced=0;
+    static int mazeHeight = 600;
+    static int mazeWidth = 1000;
     private static int[][] field = new int[mazeHeight][mazeWidth];
     private static int[][] color = new int[mazeHeight][mazeWidth];
     private static Runner runner = new Runner(field, 1, 1);
@@ -38,7 +39,7 @@ public class MazeGenerator extends JComponent {
         Room[] rooms = generateRooms();
         placeRooms(rooms);
 
-        Crawler first = new Crawler(1, 1, 0, 1);
+        Crawler first = new Crawler(3, 3, 0, 1);
         //Crawler second = new Crawler(1, mazeHeight-2, 0, 1);
         //Crawler third = new Crawler(mazeWidth-2, 1, 0, 1);
         //Crawler fourth = new Crawler(mazeWidth-2, mazeHeight-2, 0, 1);
@@ -51,7 +52,7 @@ public class MazeGenerator extends JComponent {
         int safetyPasses = 0;
         while (!filled) {
             System.out.println("Pass number: " + (debug + 1));
-            for (int i = 0; i < 3000000; i++) {
+            for (int i = 0; i < 2000000; i++) {
                 first.move(field, color);
                 //second.move(field, color);
                 //third.move(field, color);
@@ -60,7 +61,7 @@ public class MazeGenerator extends JComponent {
                 //sixth.move(field, color);
                 //seventh.move(field, color);
                 //eigth.move(field, color);
-                frame.repaint();
+                //frame.repaint();
                 System.out.println("subpass number: " + (i + 1));
             }
             debug++;
@@ -70,23 +71,25 @@ public class MazeGenerator extends JComponent {
                 safetyPasses++;
             }
             safetyPasses++;
-            if (safetyPasses >= 2) {
+            if (safetyPasses >= 4) {
                 filled = true;
             }
         }
         //connector(field, color);
 
-        test.xPosition = rooms[0].xPosition;
-        test.yPosition = rooms[0].yPosition;
-        int dbg = 0;
-        while (dbg < 20000) {
-            test.decideWhichWay(field, color);
-            dbg++;
-            //TimeUnit.MILLISECONDS.sleep(50);
+        test.xPosition = 3;
+        test.yPosition = 3;
+        test.setRooms(roomsPlaced);
+        while (test.roomsConnected != test.roomsToConnect) {
+            field = test.decideWhichWay(field, color,rooms[0].xPosition,rooms[0].yPosition);
+            //TimeUnit.MILLISECONDS.sleep(150);
             frame.repaint();
         }
-        System.out.println("Done connecting");
 
+
+        System.out.println("Done connecting");
+        System.out.println("Connected:");
+        test.printConnections();
 
         for (int i = 1; i < mazeHeight - 1; i++) {
             for (int cnt = 1; cnt < mazeWidth - 1; cnt++) {
@@ -95,90 +98,6 @@ public class MazeGenerator extends JComponent {
                 frame.repaint();
             }
         }
-        //checks if a path is a loop
-        System.out.println("Checking for loops");
-        /*for (int i = 1; i < mazeHeight - 1; i++) {
-            for (int cnt = 1; cnt < mazeWidth - 1; cnt++) {
-                int originalUID = color[i][cnt];
-                boolean loop = false;
-                if (color[i][cnt] >= 10 && color[i + 1][cnt] == 1) {
-                    color[i][cnt] = 6;
-                    runner.xPosition = cnt;
-                    runner.yPosition = i + 1;
-                    System.out.println("Checking Path at " + cnt + " and " + i);
-                    runner.heading = "south";
-                    while (color[runner.yPosition][runner.xPosition] == 1 && !loop) {
-                        runner.decideWhichWay(field);
-                        if (color[runner.yPosition][runner.xPosition] == originalUID) {
-                            runner.resolve(field);
-                            loop = true;
-                        }
-                        if (color[runner.yPosition][runner.xPosition] > 10) {
-                            loop = true;
-                        }
-                    }
-                } else {
-                    if (color[i][cnt] >= 10 && color[i - 1][cnt] == 1) {
-                        runner.xPosition = cnt;
-                        runner.yPosition = i - 1;
-                        runner.heading = "north";
-                        System.out.println("Checking Path at " + cnt + " and " + i);
-                        while (color[runner.yPosition][runner.xPosition] == 1 && !loop) {
-                            runner.decideWhichWay(field);
-                            if (color[runner.yPosition][runner.xPosition] == color[i][cnt]) {
-                                runner.resolve(field);
-                                loop = true;
-                            }
-                            if (color[runner.yPosition][runner.xPosition] > 10) {
-                                loop = true;
-                            }
-                        }
-                    } else {
-                        if (color[i][cnt] >= 10 && color[i][cnt + 1] == 1) {
-                            runner.xPosition = cnt + 1;
-                            runner.yPosition = i;
-                            runner.heading = "east";
-                            System.out.println("Checking Path at " + cnt + " and " + i);
-                            while (color[runner.yPosition][runner.xPosition] == 1 && !loop) {
-                                runner.decideWhichWay(field);
-                                if (color[runner.yPosition][runner.xPosition] == color[i][cnt]) {
-                                    runner.resolve(field);
-                                    loop = true;
-                                }
-                                if (color[runner.yPosition][runner.xPosition] > 10) {
-                                    loop = true;
-                                }
-                            }
-                        } else {
-                            if (color[i][cnt] >= 10 && color[i][cnt - 1] == 1) {
-                                runner.xPosition = cnt - 1;
-                                runner.yPosition = i;
-                                runner.heading = "west";
-                                System.out.println("Checking Path at " + cnt + " and " + i);
-                                while (color[runner.yPosition][runner.xPosition] == 1 && !loop) {
-                                    runner.decideWhichWay(field);
-                                    if (color[runner.yPosition][runner.xPosition] == color[i][cnt]) {
-                                        runner.resolve(field);
-                                        loop = true;
-                                    }
-                                    if (color[runner.yPosition][runner.xPosition] > 10) {
-                                        loop = true;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                frame.repaint();
-            }
-        }*/
-        /*for(int i=1;i<mazeHeight-1;i++){
-            for(int cnt=1;cnt<mazeWidth-1;cnt++){
-                first.removeDeadEnds(field,i,cnt);
-                //TimeUnit.MILLISECONDS.sleep(500);
-                frame.repaint();
-            }
-        }*/
         System.out.println("Generated");
         int exit = (int) Math.floor(Math.random() * Math.floor(field.length));
         boolean validExit = false;
@@ -246,8 +165,8 @@ public class MazeGenerator extends JComponent {
     public void paintComponent(Graphics g) {
         int currentColumn = 0;
         int size = 1;
-        int xRatio = (int) Math.floor(1920 / field[0].length);
-        int yRatio = (int) Math.floor(1080 / field.length);
+        int xRatio = (int) Math.floor(1366 / field[0].length);
+        int yRatio = (int) Math.floor(768 / field.length);
         if (xRatio > yRatio && yRatio != 0) {
             size = yRatio;
         } else {
@@ -293,6 +212,7 @@ public class MazeGenerator extends JComponent {
             System.out.println("Placing Room " + i + " at " + rooms[i].xPosition + " and " + rooms[i].yPosition + " with height " + rooms[i].height + " and width " + rooms[i].width);
             if (rooms[i].checkRoom(field, color)) {
                 rooms[i].placeRoom(field, color);
+                roomsPlaced++;
             }
         }
     }
@@ -300,8 +220,20 @@ public class MazeGenerator extends JComponent {
     private static Room[] generateRooms() {
         Room[] rooms = new Room[roomAmount];
         for (int i = 0; i < roomAmount; i++) {
-            int dimensions = (int) (Math.random() * (mazeWidth / 5)) + 20;
-            rooms[i] = new Room((int) (Math.random() * mazeWidth), (int) (Math.random() * mazeHeight), dimensions, dimensions, 1, i + 10);
+            int dimensions = (int) (Math.random() * (mazeWidth / 75)) + 40;
+            int roomWidth = (int) (Math.random()* mazeWidth);
+            int roomHeight = (int) (Math.random() * mazeHeight);
+            if(roomWidth<2){
+                roomWidth=+2;
+            }else if(roomWidth>mazeWidth-2){
+                roomWidth=-2;
+            }
+            if(roomHeight<2){
+                roomHeight=+2;
+            }else if(roomHeight>mazeHeight-2){
+                roomHeight=+2;
+            }
+            rooms[i] = new Room(roomWidth, roomHeight, dimensions, dimensions, 1, i + 10);
         }
         return rooms;
     }
