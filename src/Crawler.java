@@ -6,7 +6,7 @@ public class Crawler {
     int dir;
     int uID;
     int hasChangedDir = 0;
-    int maxSteps = 150;
+    int maxSteps = 5000;
     int stepsTaken = 0;
     int furthestX = 0;
     int furthestY = 0;
@@ -29,8 +29,8 @@ public class Crawler {
 
     public void move(int[][] field, int[][]color){
         int rand = (int)Math.floor(Math.random() * Math.floor(4));
-        int doesItChange = (int)Math.floor(Math.random() * Math.floor(11));
-        if(doesItChange>3){
+        int doesItChange = (int)Math.floor(Math.random() * Math.floor(100));
+        if(doesItChange<85){
             dir=rand;
         }
         if(hasChangedDir==20){
