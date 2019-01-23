@@ -3,14 +3,14 @@ import java.util.Deque;
 
 import java.awt.event.KeyEvent;
 
-public class Player {
+ class Player {
     int xPosition;
     int yPosition;
     String heading = "north";
-    private Deque stack = new ArrayDeque();
+    private Deque<String> stack = new ArrayDeque<>();
 
 
-    public void keyPressed(KeyEvent e, int[][] maze) {
+    void keyPressed(KeyEvent e, int[][] maze) {
         if (e.getKeyCode() == KeyEvent.VK_A) {
             this.heading = "west";
             this.decideWhichWay(maze);
@@ -28,37 +28,37 @@ public class Player {
             this.decideWhichWay(maze);
         }
     }
-    public void decideWhichWay(int[][] maze) {
+    private void decideWhichWay(int[][] maze) {
         switch (heading) {
             case "north":
                 if (maze[yPosition - 1][xPosition] == 1) {
-                    stack.add(new String(this.xPosition + " " + this.yPosition));
+                    stack.add(this.xPosition + " " + this.yPosition);
                     this.yPosition--;
                 }
                 break;
             case "east":
                 if (maze[yPosition][xPosition + 1] == 1) {
-                    stack.add(new String(this.xPosition + " " + this.yPosition));
+                    stack.add(this.xPosition + " " + this.yPosition);
                     this.xPosition++;
                 }
                 break;
             case "south":
                 if (maze[yPosition + 1][xPosition] == 1) {
-                    stack.add(new String(this.xPosition + " " + this.yPosition));
+                    stack.add(this.xPosition + " " + this.yPosition);
                     this.yPosition++;
                 }
                 break;
 
             case "west":
                 if (maze[yPosition][xPosition - 1] == 1) {
-                    stack.add(new String(this.xPosition + " " + this.yPosition));
+                    stack.add(this.xPosition + " " + this.yPosition);
                     this.xPosition--;
                 }
                 break;
         }
     }
 
-    public Player(int[][] field, int xPosition, int yPosition) {
+    Player(int xPosition, int yPosition) {
         this.xPosition = xPosition;
         this.yPosition = yPosition;
     }

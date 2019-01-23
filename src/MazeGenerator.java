@@ -11,7 +11,7 @@ public class MazeGenerator extends JComponent implements KeyListener{
     static int mazeWidth = 250;
     private static int[][] field = new int[mazeHeight][mazeWidth];
     private static int[][] color = new int[mazeHeight][mazeWidth];
-    private static Player player = new Player(field, 30,30);
+    private static Player player = new Player(30,30);
     private static Connector roomConnector = new Connector(field, 1, 1);
 
     private static void init() throws InterruptedException {
@@ -208,7 +208,7 @@ public class MazeGenerator extends JComponent implements KeyListener{
 
     private static void placeRooms(Room[] rooms) {
         for (Room currentRoom : rooms) {
-            if (currentRoom.checkRoom(field, color)) {
+            if (currentRoom.checkRoom(field)) {
                 currentRoom.placeRoom(field, color);
                 roomsPlaced++;
             }
