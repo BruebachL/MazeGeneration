@@ -37,7 +37,6 @@ public class Connector {
     }
 
     public int[][] decideWhichWay(int[][] maze, int[][] color, int startX, int startY) {
-        //System.out.println("connector moving from: " + this.xPosition + " " + this.yPosition);
         if(!unvisitedNearby(maze)){
             recurse(maze);
         }else {
@@ -52,23 +51,19 @@ public class Connector {
                         if(!UIDConnected(color[yPosition-2][xPosition]) && color[yPosition-2][xPosition]>=10){
                             maze[yPosition - 1][xPosition] = 1;
                             roomUIDS[roomsConnected]=color[yPosition-2][xPosition];
-                            System.out.println("Connected a " + heading + "ern passageway.");
                             roomsConnected++;
                             break;
                         }else if (!UIDConnected(color[yPosition][xPosition]) && color[yPosition][xPosition]>=9) {
                             maze[yPosition - 1][xPosition] = 1;
                             roomUIDS[roomsConnected] = color[yPosition][xPosition];
-                            System.out.println("Connected a " + heading + "ern passageway.");
                             roomsConnected++;
                             break;
                         }else{
                             heading = "east";
-                            //System.out.println("from north going next to:" + heading);
                             break;
                         }
                     } else {
                         heading = "east";
-                        //System.out.println("from north going next to:" + heading);
                         break;
                     }
                 case "east":
@@ -82,23 +77,19 @@ public class Connector {
                         if(!UIDConnected(color[yPosition][xPosition+2]) && color[yPosition][xPosition+2]>=10){
                             maze[yPosition][xPosition+1] = 1;
                             roomUIDS[roomsConnected]=color[yPosition][xPosition+2];
-                            System.out.println("Connected a " + heading + "ern passageway.");
                             roomsConnected++;
                             break;
                         }else if (!UIDConnected(color[yPosition][xPosition]) && color[yPosition][xPosition]>=9) {
                             maze[yPosition][xPosition+1] = 1;
                             roomUIDS[roomsConnected] = color[yPosition][xPosition];
-                            System.out.println("Connected a " + heading + "ern passageway.");
                             roomsConnected++;
                             break;
                         }else{
                             heading = "south";
-                            //System.out.println("from south going next to:" + heading);
                             break;
                         }
                     } else {
                         heading = "south";
-                        //System.out.println("from east going next to: " + heading);
                         break;
                     }
                 case "south":
@@ -112,23 +103,19 @@ public class Connector {
                         if(!UIDConnected(color[yPosition+2][xPosition]) && color[yPosition+2][xPosition]>=10){
                             maze[yPosition + 1][xPosition] = 1;
                             roomUIDS[roomsConnected]=color[yPosition+2][xPosition];
-                            System.out.println("Connected a " + heading + "ern passageway.");
                             roomsConnected++;
                             break;
                         }else if (!UIDConnected(color[yPosition][xPosition]) && color[yPosition][xPosition]>=9) {
                             maze[yPosition + 1][xPosition] = 1;
                             roomUIDS[roomsConnected] = color[yPosition][xPosition];
-                            System.out.println("Connected a " + heading + "ern passageway.");
                             roomsConnected++;
                             break;
                         }else{
                             heading = "west";
-                            //System.out.println("from south going next to:" + heading);
                             break;
                         }
                     } else {
                         heading = "west";
-                        //System.out.println("from south going next to: " + heading);
                         break;
                     }
                 case "west":
@@ -141,24 +128,19 @@ public class Connector {
                         if(!UIDConnected(color[yPosition][xPosition-2]) && color[yPosition][xPosition-2]>=10){
                             maze[yPosition][xPosition-1] = 1;
                             roomUIDS[roomsConnected]=color[yPosition][xPosition-2];
-                            System.out.println("Connected a " + heading + "ern passageway.");
                             roomsConnected++;
                             break;
                         }else if (!UIDConnected(color[yPosition][xPosition]) && color[yPosition][xPosition]>=9) {
                             maze[yPosition][xPosition-1] = 1;
                             roomUIDS[roomsConnected] = color[yPosition][xPosition];
-                            System.out.println("Connected a " + heading + "ern passageway.");
                             roomsConnected++;
                             break;
                         }else{
-                            System.out.println("Got else");
                             heading = "north";
-                            //System.out.println("from west going next to:" + heading);
                             break;
                         }
                     } else {
                         heading = "north";
-                        //System.out.println("from west going next to: " + heading);
                         break;
                     }
             }
@@ -178,11 +160,9 @@ public class Connector {
     boolean UIDConnected(int newUID){
         for(int uID : roomUIDS){
             if(uID==newUID){
-                System.out.println(uID + " is already present " + newUID);
                 return true;
             }
         }
-        System.out.println(newUID + " is unique");
         return false;
     }
     public void printConnections(){

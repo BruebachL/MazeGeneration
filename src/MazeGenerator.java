@@ -1,19 +1,20 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.Scanner;
-import java.util.concurrent.TimeUnit;
 
-public class MazeGenerator extends JComponent {
-    private static int roomAmount = 250;
-    static int roomsPlaced = 0;
-    static int mazeHeight = 1080;
-    static int mazeWidth = 1920;
-    public static int[][] field = new int[mazeHeight][mazeWidth];
-    public static int[][] color = new int[mazeHeight][mazeWidth];
-    public static Runner runner = new Runner(field, 1, 1);
-    public static Connector roomConnector = new Connector(field, 1, 1);
+public class MazeGenerator extends JComponent implements KeyListener{
+    private static int roomsPlaced = 0;
+    static int mazeHeight = 250;
+    static int mazeWidth = 250;
+    private static int[][] field = new int[mazeHeight][mazeWidth];
+    private static int[][] color = new int[mazeHeight][mazeWidth];
+    private static Player player = new Player(field, 30,30);
+    private static Connector roomConnector = new Connector(field, 1, 1);
 
-    public static int[][] init() throws InterruptedException {
+    private static void init() throws InterruptedException {
         Room[] rooms = generateRooms();
         placeRooms(rooms);
         Scanner scanner = new Scanner(System.in);
@@ -38,11 +39,11 @@ public class MazeGenerator extends JComponent {
         //Crawler fifth = new Crawler(1, 1, 0, 1);
         //Crawler sixth = new Crawler(1, (mazeHeight-2)/2, 0, 1);
         //Crawler seventh = new Crawler((mazeWidth-2)/2, 1, 0, 1);
-        //Crawler eigth = new Crawler((mazeWidth-2)/2, (mazeHeight-2)/2, 0, 1);
+        //Crawler eight = new Crawler((mazeWidth-2)/2, (mazeHeight-2)/2, 0, 1);
         boolean filled = false;
         int safetyPasses = 0;
         while (!filled) {
-            for (int i = 0; i < 5000000; i++) {
+            for (int i = 0; i < 500000; i++) {
                 first.move(field, color);
                 //second.move(field, color);
                 //third.move(field, color);
@@ -50,14 +51,13 @@ public class MazeGenerator extends JComponent {
                 //fifth.move(field, color);
                 //sixth.move(field, color);
                 //seventh.move(field, color);
-                //eigth.move(field, color);
-
+                //eight.move(field, color);
             }
             if (first.furthestX == mazeWidth - 3 && first.furthestY == mazeHeight - 2) {
+                System.out.println("Pass number: " + (safetyPasses + 1));
                 safetyPasses++;
             }
-            System.out.println("Pass number: " + (safetyPasses + 1));
-            if (safetyPasses >= 50) {
+            if (safetyPasses >= 25) {
                 filled = true;
             }
         }
@@ -67,12 +67,57 @@ public class MazeGenerator extends JComponent {
         while (roomConnector.roomsConnected != roomConnector.roomsToConnect) {
             field = roomConnector.decideWhichWay(field, color, rooms[0].xPosition, rooms[0].yPosition);
         }
+        connector(field, color);
         for (int i = 1; i < mazeHeight - 1; i++) {
             for (int cnt = 1; cnt < mazeWidth - 1; cnt++) {
                 first.removeDeadEnds(field, i, cnt);
             }
         }
-        return field;
+        System.out.println("Initialized");
+    }
+
+    @Override
+    public void keyTyped(KeyEvent e) {
+    }
+    @Override
+    public void keyPressed(KeyEvent e) {
+        player.keyPressed(e, field);
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+        System.out.println("keyReleased="+KeyEvent.getKeyText(e.getKeyCode()));
+    }
+    public static void main(String[] args) throws Exception {
+        JFrame frame = new JFrame("Maze");
+        frame.setSize(field[0].length, field.length);
+        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        frame.getContentPane().add(new MazeGenerator());
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setVisible(true);
+        frame.setFocusable(true);
+        frame.requestFocusInWindow();
+        KeyListener listener = new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                player.keyPressed(e, field);
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+                System.out.println("keyReleased="+KeyEvent.getKeyText(e.getKeyCode()));
+            }
+        };
+        frame.addKeyListener(listener);
+        init();
+        while(true){
+            System.out.println(player.heading);
+            frame.repaint();
+        }
     }
 
     private static void customize() {
@@ -116,18 +161,62 @@ public class MazeGenerator extends JComponent {
         }
     }
 
+    public void paintComponent(Graphics g) {
+        int currentColumn = 0;
+        int size = 1;
+        int xRatio = 1920 / field[0].length;
+        int yRatio = 1080 / field.length;
+        if (xRatio > yRatio && yRatio != 0) {
+            size = yRatio;
+        } else {
+            if (xRatio != 0) {
+                size = xRatio;
+            }
+        }
+
+        for (int[] row : field
+        ) {
+
+            for (int i = 0; i < row.length; i++) {
+                if (player.yPosition == currentColumn && player.xPosition == i) {
+                    g.setColor(Color.MAGENTA);
+                    g.fillRect((i * size), currentColumn * size, size, size);
+                } else {
+                    if (roomConnector.yPosition == currentColumn && roomConnector.xPosition == i) {
+                        g.setColor(Color.yellow);
+                        g.fillRect((i * size), currentColumn * size, size * 5, size * 5);
+                    } else {
+                        if (row[i] == 1) {
+                            g.setColor(Color.white);
+                            g.fillRect((i * size), currentColumn * size, size, size);
+                        } else {
+                            if (row[i] == 6) {
+                                g.setColor(Color.red);
+                                g.fillRect((i * size), currentColumn * size, size, size);
+                            } else {
+                                g.setColor(Color.black);
+                                g.fillRect((i * size), currentColumn * size, size, size);
+                            }
+                        }
+                    }
+                }
+            }
+            currentColumn++;
+        }
+
+    }
 
     private static void placeRooms(Room[] rooms) {
-        for (int i = 0; i < rooms.length; i++) {
-            System.out.println("Placing Room " + i + " at " + rooms[i].xPosition + " and " + rooms[i].yPosition + " with height " + rooms[i].height + " and width " + rooms[i].width);
-            if (rooms[i].checkRoom(field, color)) {
-                rooms[i].placeRoom(field, color);
+        for (Room currentRoom : rooms) {
+            if (currentRoom.checkRoom(field, color)) {
+                currentRoom.placeRoom(field, color);
                 roomsPlaced++;
             }
         }
     }
 
     private static Room[] generateRooms() {
+        int roomAmount = 50;
         Room[] rooms = new Room[roomAmount];
         for (int i = 0; i < roomAmount; i++) {
             int dimensions = (int) (Math.random() * (mazeWidth / 75)) + 40;
@@ -148,9 +237,7 @@ public class MazeGenerator extends JComponent {
         return rooms;
     }
 
-    public static void connector(int[][] field, int[][] color) {
-        //int exit = (int) Math.floor(Math.random() * Math.floor(field.length));
-        //field[exit][field[0].length] = 1;
+    private static void connector(int[][] field, int[][] color) {
         for (int i = 0; i < field.length; i++) {
             for (int cnt = 0; cnt < field[0].length; cnt++) {
                 if (cnt + 1 < field[0].length && cnt - 1 >= 0 && field[i][cnt] == 0 && field[i][cnt + 1] == 1 && field[i][cnt - 1] == 1 && color[i][cnt - 1] != color[i][cnt + 1] && (color[i][cnt - 1] > 1 && color[i][cnt + 1] > 1)) {
@@ -161,7 +248,6 @@ public class MazeGenerator extends JComponent {
                 }
             }
         }
-        System.out.println("Connected");
     }
 }
 
