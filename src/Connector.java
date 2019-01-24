@@ -50,11 +50,13 @@ public class Connector {
                     } else if (((color[yPosition - 2][xPosition] >= 10 && color[yPosition][xPosition] == 1) || (color[yPosition - 2][xPosition] == 1 && (color[yPosition][xPosition] >= 9))) && maze[yPosition - 1][xPosition] != 1) {
                         if(!UIDConnected(color[yPosition-2][xPosition]) && color[yPosition-2][xPosition]>=10){
                             maze[yPosition - 1][xPosition] = 1;
+                            color[yPosition - 1][xPosition] = 5;
                             roomUIDS[roomsConnected]=color[yPosition-2][xPosition];
                             roomsConnected++;
                             break;
                         }else if (!UIDConnected(color[yPosition][xPosition]) && color[yPosition][xPosition]>=9) {
                             maze[yPosition - 1][xPosition] = 1;
+                            color[yPosition - 1][xPosition] = 5;
                             roomUIDS[roomsConnected] = color[yPosition][xPosition];
                             roomsConnected++;
                             break;
@@ -76,11 +78,13 @@ public class Connector {
                     } else if (((color[yPosition][xPosition+2] >= 10 && color[yPosition][xPosition] == 1) || (color[yPosition][xPosition+2] == 1 && (color[yPosition][xPosition] >= 9))) && maze[yPosition][xPosition+1] != 1) {
                         if(!UIDConnected(color[yPosition][xPosition+2]) && color[yPosition][xPosition+2]>=10){
                             maze[yPosition][xPosition+1] = 1;
+                            color[yPosition][xPosition+1] = 5;
                             roomUIDS[roomsConnected]=color[yPosition][xPosition+2];
                             roomsConnected++;
                             break;
                         }else if (!UIDConnected(color[yPosition][xPosition]) && color[yPosition][xPosition]>=9) {
                             maze[yPosition][xPosition+1] = 1;
+                            color[yPosition][xPosition+1] = 5;
                             roomUIDS[roomsConnected] = color[yPosition][xPosition];
                             roomsConnected++;
                             break;
@@ -102,11 +106,13 @@ public class Connector {
                     } else if (((color[yPosition + 2][xPosition] >= 10 && color[yPosition][xPosition] == 1) || (color[yPosition + 2][xPosition] == 1 && (color[yPosition][xPosition] >= 9))) && maze[yPosition + 1][xPosition] != 1) {
                         if(!UIDConnected(color[yPosition+2][xPosition]) && color[yPosition+2][xPosition]>=10){
                             maze[yPosition + 1][xPosition] = 1;
+                            color[yPosition + 1][xPosition] = 5;
                             roomUIDS[roomsConnected]=color[yPosition+2][xPosition];
                             roomsConnected++;
                             break;
                         }else if (!UIDConnected(color[yPosition][xPosition]) && color[yPosition][xPosition]>=9) {
                             maze[yPosition + 1][xPosition] = 1;
+                            color[yPosition + 1][xPosition] = 5;
                             roomUIDS[roomsConnected] = color[yPosition][xPosition];
                             roomsConnected++;
                             break;
@@ -127,11 +133,13 @@ public class Connector {
                     } else if (((color[yPosition][xPosition-2] >= 10 && color[yPosition][xPosition] == 1) || (color[yPosition][xPosition-2] == 1 && (color[yPosition][xPosition] >= 9))) && maze[yPosition][xPosition-2] != 1) {
                         if(!UIDConnected(color[yPosition][xPosition-2]) && color[yPosition][xPosition-2]>=10){
                             maze[yPosition][xPosition-1] = 1;
+                            color[yPosition][xPosition-1] = 5;
                             roomUIDS[roomsConnected]=color[yPosition][xPosition-2];
                             roomsConnected++;
                             break;
                         }else if (!UIDConnected(color[yPosition][xPosition]) && color[yPosition][xPosition]>=9) {
                             maze[yPosition][xPosition-1] = 1;
+                            color[yPosition][xPosition-1] = 5;
                             roomUIDS[roomsConnected] = color[yPosition][xPosition];
                             roomsConnected++;
                             break;

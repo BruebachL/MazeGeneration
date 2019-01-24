@@ -3,44 +3,42 @@ import java.util.Deque;
 
 import java.awt.event.KeyEvent;
 
- class Player {
+class Monster {
     int xPosition;
     int yPosition;
     String heading = "north";
-    boolean turnTaken = false;
+    int energy=0;
     private Deque<String> stack = new ArrayDeque<>();
 
-    void update(){
-
+    void update(Player player, int[][] maze){
+        if(playerInRange(player)){
+            if(energy>100) {
+                if (player.xPosition > this.xPosition) {
+                    this.xPosition++;
+                } else if (player.xPosition < this.xPosition) {
+                    this.xPosition--;
+                }
+                if (player.yPosition > this.yPosition) {
+                    this.yPosition++;
+                } else if (player.yPosition < this.yPosition) {
+                    this.yPosition--;
+                }
+                energy=0;
+            }else{
+                energy+=20;
+            }
+            //decideWhichWay(maze);
+        }
     }
-
-    void keyPressed(KeyEvent e, int[][] maze) {
-        if (e.getKeyCode() == KeyEvent.VK_A) {
-            this.heading = "west";
-            this.decideWhichWay(maze);
-            turnTaken=true;
+    boolean playerInRange(Player player){
+        for(int i = this.xPosition-10;i<this.xPosition+10;i++){
+            for(int cnt = this.yPosition-10; cnt<this.yPosition+10;cnt++){
+                if(i==player.xPosition&&cnt==player.yPosition){
+                    return true;
+                }
+            }
         }
-        if (e.getKeyCode() == KeyEvent.VK_D) {
-            this.heading = "east";
-            this.decideWhichWay(maze);
-            turnTaken=true;
-        }
-        if (e.getKeyCode() == KeyEvent.VK_W) {
-            this.heading = "north";
-            this.decideWhichWay(maze);
-            turnTaken=true;
-        }
-        if (e.getKeyCode() == KeyEvent.VK_S) {
-            this.heading = "south";
-            this.decideWhichWay(maze);
-            turnTaken=true;
-        }
-        if (e.getKeyCode() == KeyEvent.VK_T) {
-            Fireball fireball = new Fireball(this.xPosition+1, this.yPosition);
-            fireball.heading=this.heading;
-            MazeGenerator.fireballList.add(fireball);
-            turnTaken=true;
-        }
+        return false;
     }
     private void decideWhichWay(int[][] maze) {
         switch (heading) {
@@ -72,7 +70,7 @@ import java.awt.event.KeyEvent;
         }
     }
 
-    Player(int xPosition, int yPosition) {
+    Monster(int xPosition, int yPosition) {
         this.xPosition = xPosition;
         this.yPosition = yPosition;
     }
