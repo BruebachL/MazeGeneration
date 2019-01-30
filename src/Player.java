@@ -2,44 +2,178 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 
 import java.awt.event.KeyEvent;
+import java.util.concurrent.TimeUnit;
 
- class Player {
+class Player {
     int xPosition;
     int yPosition;
     String heading = "north";
     boolean turnTaken = false;
     private Deque<String> stack = new ArrayDeque<>();
-
-    void update(){
-
+    int health = 100;
+    int energy = 0;
+    void update() throws InterruptedException {
+        if(energy<100){
+            energy+=25;
+        }
     }
 
-    void keyPressed(KeyEvent e, int[][] maze) {
+    void keyPressed(KeyEvent e, int[][] maze) throws InterruptedException {
         if (e.getKeyCode() == KeyEvent.VK_A) {
-            this.heading = "west";
-            this.decideWhichWay(maze);
-            turnTaken=true;
+            if(energy>=100) {
+                this.heading = "west";
+                if (!collisionDetection()) {
+                    this.decideWhichWay(maze);
+                } else {
+                    this.swingSword();
+                }
+                MazeGenerator.repaintWindow();
+                this.energy=0;
+                turnTaken = true;
+            }
         }
         if (e.getKeyCode() == KeyEvent.VK_D) {
-            this.heading = "east";
-            this.decideWhichWay(maze);
-            turnTaken=true;
+            if(energy>=100) {
+                this.heading = "east";
+                if (!collisionDetection()) {
+                    this.decideWhichWay(maze);
+                } else {
+                    this.swingSword();
+                }
+                MazeGenerator.repaintWindow();
+                this.energy=0;
+                turnTaken = true;
+            }
         }
         if (e.getKeyCode() == KeyEvent.VK_W) {
-            this.heading = "north";
-            this.decideWhichWay(maze);
-            turnTaken=true;
+            if(energy>=100) {
+                this.heading = "north";
+                if (!collisionDetection()) {
+                    this.decideWhichWay(maze);
+                } else {
+                    this.swingSword();
+                }
+                MazeGenerator.repaintWindow();
+                this.energy=0;
+                turnTaken = true;
+            }
         }
         if (e.getKeyCode() == KeyEvent.VK_S) {
-            this.heading = "south";
-            this.decideWhichWay(maze);
-            turnTaken=true;
+            if(energy>=100) {
+                this.heading = "south";
+                if (!collisionDetection()) {
+                    this.decideWhichWay(maze);
+                } else {
+                    this.swingSword();
+                }
+                MazeGenerator.repaintWindow();
+                this.energy = 0;
+                turnTaken = true;
+            }
         }
         if (e.getKeyCode() == KeyEvent.VK_T) {
-            Fireball fireball = new Fireball(this.xPosition+1, this.yPosition);
-            fireball.heading=this.heading;
-            MazeGenerator.fireballList.add(fireball);
-            turnTaken=true;
+            switch (heading) {
+                case "north":
+                    Fireball fireball = new Fireball(this.xPosition, this.yPosition - 1,false);
+                    fireball.heading = this.heading;
+                    MazeGenerator.fireballList.add(fireball);
+                    break;
+                case "east":
+                    Fireball fireball2 = new Fireball(this.xPosition + 1, this.yPosition,false);
+                    fireball2.heading = this.heading;
+                    MazeGenerator.fireballList.add(fireball2);
+                    break;
+                case "south":
+                    Fireball fireball3 = new Fireball(this.xPosition, this.yPosition + 1,false);
+                    fireball3.heading = this.heading;
+                    MazeGenerator.fireballList.add(fireball3);
+                    break;
+                case "west":
+                    Fireball fireball4 = new Fireball(this.xPosition - 1, this.yPosition,false);
+                    fireball4.heading = this.heading;
+                    MazeGenerator.fireballList.add(fireball4);
+                    break;
+            }
+            turnTaken = true;
+        }
+        if (e.getKeyCode() == KeyEvent.VK_F) {
+            switch (heading) {
+                case "north":
+                    Fireball fireball = new Fireball(this.xPosition, this.yPosition - 1,true);
+                    fireball.heading = this.heading;
+                    MazeGenerator.fireballList.add(fireball);
+                    break;
+                case "east":
+                    Fireball fireball2 = new Fireball(this.xPosition + 1, this.yPosition,true);
+                    fireball2.heading = this.heading;
+                    MazeGenerator.fireballList.add(fireball2);
+                    break;
+                case "south":
+                    Fireball fireball3 = new Fireball(this.xPosition, this.yPosition + 1,true);
+                    fireball3.heading = this.heading;
+                    MazeGenerator.fireballList.add(fireball3);
+                    break;
+                case "west":
+                    Fireball fireball4 = new Fireball(this.xPosition - 1, this.yPosition,true);
+                    fireball4.heading = this.heading;
+                    MazeGenerator.fireballList.add(fireball4);
+                    break;
+            }
+            turnTaken = true;
+        }
+    }
+
+    private boolean collisionDetection(){
+        for(Monster monster : MazeGenerator.monsterList){
+            switch (heading){
+                case "north":
+                    if(monster.xPosition==this.xPosition&&monster.yPosition==this.yPosition-1){
+                        return true;
+                    }
+                    break;
+                case "south":
+                    if(monster.xPosition==this.xPosition&&monster.yPosition==this.yPosition+1){
+                        return true;
+                    }
+                case "east":
+                    if(monster.xPosition==this.xPosition+1&&monster.yPosition==this.yPosition){
+                        return true;
+                    }
+                    break;
+                case "west":
+                    if(monster.xPosition==this.xPosition-1&&monster.yPosition==this.yPosition){
+                        return true;
+                    }
+            }
+        }
+            return false;
+        }
+    private void swingSword(){
+        for(Monster monster : MazeGenerator.monsterList){
+            switch (heading){
+                case "north":
+                    if(monster.xPosition==this.xPosition&&monster.yPosition==this.yPosition-1){
+                        monster.health-=50;
+                        monster.yPosition-=2;
+                    }
+                    break;
+                case "south":
+                    if(monster.xPosition==this.xPosition&&monster.yPosition==this.yPosition+1){
+                        monster.health-=50;
+                        monster.yPosition+=2;
+                    }
+                case "east":
+                    if(monster.xPosition==this.xPosition+1&&monster.yPosition==this.yPosition){
+                        monster.health-=50;
+                        monster.xPosition+=2;
+                    }
+                    break;
+                case "west":
+                    if(monster.xPosition==this.xPosition-1&&monster.yPosition==this.yPosition){
+                        monster.health-=50;
+                        monster.xPosition-=2;
+                    }
+            }
         }
     }
     private void decideWhichWay(int[][] maze) {

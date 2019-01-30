@@ -8,9 +8,14 @@ class Monster {
     int yPosition;
     String heading = "north";
     int energy=0;
+    int health = 100;
     private Deque<String> stack = new ArrayDeque<>();
 
     void update(Player player, int[][] maze){
+        if(health<=0){
+            this.yPosition=998;
+            this.xPosition=998;
+        }
         if(playerInRange(player)){
             if(energy>100) {
                 if (player.xPosition > this.xPosition) {
@@ -25,7 +30,7 @@ class Monster {
                 }
                 energy=0;
             }else{
-                energy+=20;
+                energy+=50;
             }
             //decideWhichWay(maze);
         }

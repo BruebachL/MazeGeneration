@@ -4,7 +4,11 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Scanner;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.TimeUnit;
 
 public class MazeGenerator extends JComponent implements KeyListener {
     private static int roomsPlaced = 0;
@@ -13,9 +17,11 @@ public class MazeGenerator extends JComponent implements KeyListener {
     static int[][] field = new int[mazeHeight][mazeWidth];
     static int[][] color = new int[mazeHeight][mazeWidth];
     static Player player = new Player(30, 30);
-    private static Monster monster = new Monster(30, 30);
+    static ArrayList<Monster> monsterList = new ArrayList<Monster>();
+    static ArrayList<Room> roomList = new ArrayList<Room>();
     private static Connector roomConnector = new Connector(field, 1, 1);
-    static ArrayList<Fireball> fireballList = new ArrayList<Fireball>();
+    static List<Fireball> fireballList = new CopyOnWriteArrayList<>();
+    static JFrame frame = new JFrame("Maze");
 
 
     @Override
@@ -24,17 +30,25 @@ public class MazeGenerator extends JComponent implements KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
-        player.keyPressed(e, field);
+        try {
+            player.keyPressed(e, field);
+        } catch (InterruptedException e1) {
+            e1.printStackTrace();
+        }
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
-        player.keyPressed(e, field);
+        try {
+            player.keyPressed(e, field);
+        } catch (InterruptedException e1) {
+            e1.printStackTrace();
+        }
         System.out.println("keyReleasedMain=" + KeyEvent.getKeyText(e.getKeyCode()));
     }
 
     public static void main(String[] args) throws Exception {
-        JFrame frame = new JFrame("Maze");
+
         frame.setSize(field[0].length, field.length);
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
         frame.getContentPane().add(new MazeGenerator());
@@ -49,7 +63,7 @@ public class MazeGenerator extends JComponent implements KeyListener {
 
             @Override
             public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_F) {
+                if (e.getKeyCode() == KeyEvent.VK_G) {
                     try {
                         init();
                         frame.repaint();
@@ -57,7 +71,11 @@ public class MazeGenerator extends JComponent implements KeyListener {
                         e1.printStackTrace();
                     }
                 }
-                player.keyPressed(e, field);
+                try {
+                    player.keyPressed(e, field);
+                } catch (InterruptedException e1) {
+                    e1.printStackTrace();
+                }
             }
 
             @Override
@@ -71,14 +89,21 @@ public class MazeGenerator extends JComponent implements KeyListener {
         while (true) {
             while (player.turnTaken == false) {
                 player.update();
+                TimeUnit.MILLISECONDS.sleep(100);
                 frame.repaint();
-
             }
-            System.out.println("Logic processed");
-            monster.update(player,field);
-            for (Fireball fireball:fireballList) {
+            Iterator<Fireball> iter = fireballList.iterator();
+            while(iter.hasNext()){
+                Fireball fireball = iter.next();
                 fireball.update();
             }
+
+            for (Monster monster: monsterList
+            ) {
+                monster.update(player,field);
+            }
+            System.out.println("Logic processed");
+            frame.repaint();
             player.turnTaken = false;
         }
     }
@@ -135,8 +160,12 @@ public class MazeGenerator extends JComponent implements KeyListener {
         System.out.println("Filled");
         player.xPosition = rooms[0].xPosition;
         player.yPosition = rooms[0].yPosition;
-        monster.xPosition = rooms[0].xPosition+20;
-        monster.yPosition = rooms[0].yPosition+20;
+        Monster monster = new Monster(rooms[0].xPosition+20, rooms[0].yPosition+20);
+        Monster monster2 = new Monster(rooms[0].xPosition+25, rooms[0].yPosition+25);
+        Monster monster3 = new Monster(rooms[0].xPosition+15, rooms[0].yPosition+15);
+        monsterList.add(monster);
+        monsterList.add(monster2);
+        monsterList.add(monster3);
         roomConnector.xPosition = 3;
         roomConnector.yPosition = 3;
         roomConnector.roomsConnected = 0;
@@ -196,7 +225,12 @@ public class MazeGenerator extends JComponent implements KeyListener {
         }
     }
 
+    public static void repaintWindow() {
+        frame.repaint();
+    }
+
     public void paintComponent(Graphics g) {
+        super.paintComponent(g);
         int currentColumn = 0;
         int size = 1;
         int xRatio = 1920 / field[0].length;
@@ -221,13 +255,9 @@ public class MazeGenerator extends JComponent implements KeyListener {
                     g.setColor(brown);
                 }
                 if (player.yPosition == currentColumn && player.xPosition == i) {
-                    g.setColor(Color.MAGENTA);
+                    g.setColor(Color.BLUE);
                     g.fillRect((i * size), currentColumn * size, size*10, size*10);
                 } else {
-                    if (monster.yPosition == currentColumn && monster.xPosition == i) {
-                        g.setColor(Color.RED);
-                        g.fillRect((i * size), currentColumn * size, size*10, size*10);
-                    } else {
                         if (roomConnector.yPosition == currentColumn && roomConnector.xPosition == i) {
                             g.setColor(Color.yellow);
                             g.fillRect((i * size), currentColumn * size, size * 5, size * 5);
@@ -245,23 +275,35 @@ public class MazeGenerator extends JComponent implements KeyListener {
                             }
                         }
                     }
-                }
+
                 for(Fireball fireball:fireballList){
                     if(fireball.yPosition == currentColumn && fireball.xPosition == i){
                         g.setColor(Color.ORANGE);
                         g.fillRect((i * size), currentColumn * size, size*10, size*10);
                     }
                 }
+                for(Monster monster:monsterList){
+                    if(monster.yPosition == currentColumn && monster.xPosition == i){
+                        g.setColor(Color.RED);
+                        g.fillRect((i * size), currentColumn * size, size, size);
+                    }
+                }
             }
             currentColumn++;
         }
-
+        int playerHealth = player.health;
+        for(int i = 0; i<playerHealth;i++){
+            g.setColor(Color.RED);
+            g.fillRect((i + 1200), 50, size, size);
+        }
     }
 
     private static void placeRooms(Room[] rooms) {
         for (Room currentRoom : rooms) {
             if (currentRoom.checkRoom(field)) {
                 currentRoom.placeRoom(field, color);
+                Monster monster = new Monster(currentRoom.xPosition+15,currentRoom.yPosition+15);
+                monsterList.add(monster);
                 roomsPlaced++;
             }
         }
@@ -285,6 +327,7 @@ public class MazeGenerator extends JComponent implements KeyListener {
                 roomHeight -= 3;
             }
             rooms[i] = new Room(roomWidth, roomHeight, dimensions, dimensions, 1, i + 10);
+
         }
         return rooms;
     }
