@@ -22,6 +22,8 @@ public class MazeGenerator extends JComponent implements KeyListener {
     private static Connector roomConnector = new Connector(field, 1, 1);
     static List<Fireball> fireballList = new CopyOnWriteArrayList<>();
     static JFrame frame = new JFrame("Maze");
+    public static String currentMessage = "";
+    public static int displayTimer;
 
 
     @Override
@@ -64,12 +66,9 @@ public class MazeGenerator extends JComponent implements KeyListener {
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_G) {
-                    try {
-                        init();
+                        currentMessage="test";
+                        displayTimer=5;
                         frame.repaint();
-                    } catch (InterruptedException e1) {
-                        e1.printStackTrace();
-                    }
                 }
                 try {
                     player.keyPressed(e, field);
@@ -104,6 +103,9 @@ public class MazeGenerator extends JComponent implements KeyListener {
             }
             System.out.println("Logic processed");
             frame.repaint();
+            if(displayTimer>0) {
+                displayTimer--;
+            }
             player.turnTaken = false;
         }
     }
@@ -180,6 +182,10 @@ public class MazeGenerator extends JComponent implements KeyListener {
             for (int cnt = 1; cnt < mazeWidth - 1; cnt++) {
                 first.removeDeadEnds(field, i, cnt);
             }
+        }
+        int x = 0;
+        while (x++<10){
+            System.out.println(x);
         }
         System.out.println("Initialized");
     }
@@ -291,10 +297,17 @@ public class MazeGenerator extends JComponent implements KeyListener {
             }
             currentColumn++;
         }
-        int playerHealth = player.health;
-        for(int i = 0; i<playerHealth;i++){
-            g.setColor(Color.RED);
-            g.fillRect((i + 1200), 50, size, size);
+        int currentMonster = 0;
+        for(Monster monster : monsterList) {
+            int monsterHealth = monster.health;
+            for (int i = 0; i < monsterHealth; i++) {
+                g.setColor(Color.RED);
+                g.fillRect((i + 1200), 50*(currentMonster+1), size, size);
+            }
+            currentMonster++;
+        }
+        if(displayTimer>0){
+            g.drawString(currentMessage,1200,200);
         }
     }
 
