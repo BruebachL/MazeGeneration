@@ -1,6 +1,5 @@
 import java.util.*;
-
-import java.awt.event.KeyEvent;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 class Monster {
     int xPosition;
@@ -8,244 +7,36 @@ class Monster {
     String heading = "north";
     int energy=0;
     int health = 100;
-    private Deque<String> stack = new ArrayDeque<>();
-    List<Tile> open = new List<Tile>() {
-        @Override
-        public int size() {
-            return 0;
-        }
-
-        @Override
-        public boolean isEmpty() {
-            return false;
-        }
-
+    private Deque<Tile> stack = new ArrayDeque<>();
+    public List<Tile> open = new CopyOnWriteArrayList<>(){
         @Override
         public boolean contains(Object o) {
+            Tile toBeChecked = (Tile) o;
+            for(Tile current : closed){
+                if(current.xPosition==toBeChecked.xPosition&&current.yPosition==toBeChecked.yPosition){
+                    return true;
+                }
+            }
             return false;
-        }
-
-        @Override
-        public Iterator<Tile> iterator() {
-            return null;
-        }
-
-        @Override
-        public Object[] toArray() {
-            return new Object[0];
-        }
-
-        @Override
-        public <T> T[] toArray(T[] a) {
-            return null;
-        }
-
-        @Override
-        public boolean add(Tile tile) {
-            return false;
-        }
-
-        @Override
-        public boolean remove(Object o) {
-            return false;
-        }
-
-        @Override
-        public boolean containsAll(Collection<?> c) {
-            return false;
-        }
-
-        @Override
-        public boolean addAll(Collection<? extends Tile> c) {
-            return false;
-        }
-
-        @Override
-        public boolean addAll(int index, Collection<? extends Tile> c) {
-            return false;
-        }
-
-        @Override
-        public boolean removeAll(Collection<?> c) {
-            return false;
-        }
-
-        @Override
-        public boolean retainAll(Collection<?> c) {
-            return false;
-        }
-
-        @Override
-        public void clear() {
-
-        }
-
-        @Override
-        public Tile get(int index) {
-            return null;
-        }
-
-        @Override
-        public Tile set(int index, Tile element) {
-            return null;
-        }
-
-        @Override
-        public void add(int index, Tile element) {
-
-        }
-
-        @Override
-        public Tile remove(int index) {
-            return null;
-        }
-
-        @Override
-        public int indexOf(Object o) {
-            return 0;
-        }
-
-        @Override
-        public int lastIndexOf(Object o) {
-            return 0;
-        }
-
-        @Override
-        public ListIterator<Tile> listIterator() {
-            return null;
-        }
-
-        @Override
-        public ListIterator<Tile> listIterator(int index) {
-            return null;
-        }
-
-        @Override
-        public List<Tile> subList(int fromIndex, int toIndex) {
-            return null;
         }
     };
-    List<Tile> closed = new List<Tile>(){
-        @Override
-        public int size() {
-            return 0;
-        }
-
-        @Override
-        public boolean isEmpty() {
-            return false;
-        }
-
+    public List<Tile> closed = new CopyOnWriteArrayList<>(){
         @Override
         public boolean contains(Object o) {
+            Tile toBeChecked = (Tile) o;
+            for(Tile current : closed){
+                if(current.xPosition==toBeChecked.xPosition&&current.yPosition==toBeChecked.yPosition){
+                    return true;
+                }
+            }
             return false;
-        }
-
-        @Override
-        public Iterator<Tile> iterator() {
-            return null;
-        }
-
-        @Override
-        public Object[] toArray() {
-            return new Object[0];
-        }
-
-        @Override
-        public <T> T[] toArray(T[] a) {
-            return null;
-        }
-
-        @Override
-        public boolean add(Tile tile) {
-            return false;
-        }
-
-        @Override
-        public boolean remove(Object o) {
-            return false;
-        }
-
-        @Override
-        public boolean containsAll(Collection<?> c) {
-            return false;
-        }
-
-        @Override
-        public boolean addAll(Collection<? extends Tile> c) {
-            return false;
-        }
-
-        @Override
-        public boolean addAll(int index, Collection<? extends Tile> c) {
-            return false;
-        }
-
-        @Override
-        public boolean removeAll(Collection<?> c) {
-            return false;
-        }
-
-        @Override
-        public boolean retainAll(Collection<?> c) {
-            return false;
-        }
-
-        @Override
-        public void clear() {
-
-        }
-
-        @Override
-        public Tile get(int index) {
-            return null;
-        }
-
-        @Override
-        public Tile set(int index, Tile element) {
-            return null;
-        }
-
-        @Override
-        public void add(int index, Tile element) {
-
-        }
-
-        @Override
-        public Tile remove(int index) {
-            return null;
-        }
-
-        @Override
-        public int indexOf(Object o) {
-            return 0;
-        }
-
-        @Override
-        public int lastIndexOf(Object o) {
-            return 0;
-        }
-
-        @Override
-        public ListIterator<Tile> listIterator() {
-            return null;
-        }
-
-        @Override
-        public ListIterator<Tile> listIterator(int index) {
-            return null;
-        }
-
-        @Override
-        public List<Tile> subList(int fromIndex, int toIndex) {
-            return null;
         }
     };
 
-    void aStar(){
-        Tile start = new Tile();
+    Monster(int xPosition, int yPosition) {
+        this.xPosition = xPosition;
+        this.yPosition = yPosition;
     }
-
     void update(Player player, int[][] maze){
         if(health<=0){
             this.yPosition=998;
@@ -253,22 +44,35 @@ class Monster {
         }else
         if(playerInRange(player)){
             if(energy>100) {
-                if (player.xPosition > this.xPosition) {
-                    this.xPosition++;
-                } else if (player.xPosition < this.xPosition) {
-                    this.xPosition--;
-                }
-                if (player.yPosition > this.yPosition) {
-                    this.yPosition++;
-                } else if (player.yPosition < this.yPosition) {
-                    this.yPosition--;
-                }
+                stack.clear();
+                this.aStar();
+                Tile moveTo = stack.getLast();
+                this.yPosition=moveTo.yPosition;
+                this.xPosition=moveTo.xPosition;
+                MazeGenerator.path[this.yPosition][this.xPosition]=0;
                 energy=0;
             }else{
                 energy+=50;
             }
-            //decideWhichWay(maze);
         }
+    }
+    boolean axisCheck(Tile destination){
+        int xDistance = 0;
+        if(destination.xPosition>this.xPosition){
+            xDistance = destination.xPosition-this.xPosition;
+        }else{
+            xDistance = this.xPosition-destination.xPosition;
+        }
+        int yDistance = 0;
+        if(destination.yPosition>this.yPosition){
+            yDistance = destination.yPosition-this.yPosition;
+        }else{
+            yDistance = this.yPosition-destination.yPosition;
+        }
+        if(xDistance>yDistance){
+            return false;
+        }
+        return true;
     }
     boolean playerInRange(Player player){
         for(int i = this.xPosition-10;i<this.xPosition+10;i++){
@@ -280,39 +84,88 @@ class Monster {
         }
         return false;
     }
-    private void decideWhichWay(int[][] maze) {
-        switch (heading) {
-            case "north":
-                if (maze[yPosition - 1][xPosition] == 1) {
-                    stack.add(this.xPosition + " " + this.yPosition);
-                    this.yPosition--;
-                }
-                break;
-            case "east":
-                if (maze[yPosition][xPosition + 1] == 1) {
-                    stack.add(this.xPosition + " " + this.yPosition);
-                    this.xPosition++;
-                }
-                break;
-            case "south":
-                if (maze[yPosition + 1][xPosition] == 1) {
-                    stack.add(this.xPosition + " " + this.yPosition);
-                    this.yPosition++;
-                }
-                break;
-
-            case "west":
-                if (maze[yPosition][xPosition - 1] == 1) {
-                    stack.add(this.xPosition + " " + this.yPosition);
-                    this.xPosition--;
-                }
-                break;
+    Tile[] getNeighbors(Tile end, Tile current){
+        Tile north = new Tile(end, current, current.xPosition, current.yPosition - 1);
+        Tile south = new Tile(end, current, current.xPosition, current.yPosition + 1);
+        Tile east = new Tile(end, current, current.xPosition + 1, current.yPosition);
+        Tile west = new Tile(end, current, current.xPosition - 1, current.yPosition);
+        if(axisCheck(end)) {
+            Tile[] neighbors = {east,west,north,south};
+            return neighbors;
+        }else{
+            Tile[] neighbors = {north,south,east,west};
+            return neighbors;
         }
     }
+    void aStar(){
+        open = new CopyOnWriteArrayList<>(){
+            @Override
+            public boolean contains(Object o) {
+                Tile toBeChecked = (Tile) o;
+                for(Tile current : open){
+                    if(current.xPosition==toBeChecked.xPosition&&current.yPosition==toBeChecked.yPosition){
+                        return true;
+                    }
+                }
+                return false;
+            }
+        };
+        closed = new CopyOnWriteArrayList<>(){
+            @Override
+            public boolean contains(Object o) {
+                Tile toBeChecked = (Tile) o;
+                for(Tile current : closed){
+                    if(current.xPosition==toBeChecked.xPosition&&current.yPosition==toBeChecked.yPosition){
+                        return true;
+                    }
+                }
+                return false;
+            }
+        };
+        Tile start = new Tile(this.xPosition,this.yPosition);
+        Tile end = new Tile(MazeGenerator.player.xPosition,MazeGenerator.player.yPosition);
+        start.setH(end);
+        Tile current=start;
+        open.add(start);
+        do{
+            System.out.println(open.size());
+            int lowestScore = 200;
+            for(Tile checked : open){
+                if(checked.f<lowestScore){
+                    current=checked;
+                    lowestScore = checked.f;
+                }
+            }
+            closed.add(current);
+            open.remove(current);
 
-    Monster(int xPosition, int yPosition) {
-        this.xPosition = xPosition;
-        this.yPosition = yPosition;
+            if(closed.contains(end)){
+                end.parent = current.parent;
+                MazeGenerator.path = new int[MazeGenerator.mazeHeight][MazeGenerator.mazeWidth];
+                while(current.parent!=null){
+                    stack.add(current);
+                    MazeGenerator.path[current.yPosition][current.xPosition]=1;
+                    System.out.println("X: " + current.xPosition + " Y: " + current.yPosition);
+                    current = current.parent;
+
+                }
+
+                MazeGenerator.path[end.yPosition][end.xPosition]=0;
+                break;
+            }
+            Tile[] neighbors = getNeighbors(end,current);
+            for(Tile neighbor : neighbors) {
+                if (MazeGenerator.field[neighbor.yPosition][neighbor.xPosition] != 0) {
+                    if (closed.contains(neighbor)) {
+
+                    } else {
+                        if (!open.contains(neighbor)) {
+                            open.add(neighbor);
+                        }
+                    }
+                }
+            }
+        }while(!open.isEmpty());
     }
 }
 

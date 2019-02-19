@@ -6,7 +6,7 @@ public class Tile {
     int h;
     Tile parent;
 
-    public Tile (Tile end, int x, int y, Tile p){
+    public Tile (Tile end, Tile p, int x, int y){
         this.xPosition=x;
         this.yPosition=y;
         this.parent=p;
@@ -14,7 +14,16 @@ public class Tile {
         this.h=manhattanDistance(end);
         this.f=g+h;
     }
-
+    public Tile (int x, int y){
+        this.xPosition=x;
+        this.yPosition=y;
+        this.f=0;
+        this.g=0;
+    }
+    public void setH(Tile end){
+        this.h=manhattanDistance(end);
+        this.f=this.g+this.h;
+    }
     public int manhattanDistance(Tile end){
         int xDistance = 0;
         if(end.xPosition>this.xPosition){

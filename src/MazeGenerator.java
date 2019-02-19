@@ -16,8 +16,9 @@ public class MazeGenerator extends JComponent implements KeyListener {
     static int mazeWidth = 250;
     static int[][] field = new int[mazeHeight][mazeWidth];
     static int[][] color = new int[mazeHeight][mazeWidth];
+    static int[][] path = new int[mazeHeight][mazeWidth];
     static Player player = new Player(30, 30);
-    static ArrayList<Monster> monsterList = new ArrayList<Monster>();
+    static List<Monster> monsterList = new CopyOnWriteArrayList<Monster>();
     static ArrayList<Room> roomList = new ArrayList<Room>();
     private static Connector roomConnector = new Connector(field, 1, 1);
     static List<Fireball> fireballList = new CopyOnWriteArrayList<>();
@@ -152,16 +153,19 @@ public class MazeGenerator extends JComponent implements KeyListener {
                 //eight.move(field, color);
             }
             if (first.furthestX == mazeWidth - 3 && first.furthestY == mazeHeight - 2) {
-                System.out.println("Pass number: " + (safetyPasses + 1));
+                //System.out.println("Pass number: " + (safetyPasses + 1));
                 safetyPasses++;
             }
             if (safetyPasses >= 25) {
                 filled = true;
             }
         }
-        System.out.println("Filled");
+        //System.out.println("Filled");
         player.xPosition = rooms[0].xPosition;
         player.yPosition = rooms[0].yPosition;
+        field[rooms[0].yPosition+4][rooms[0].xPosition+4] = 0;
+        field[rooms[0].yPosition+5][rooms[0].xPosition+4] = 0;
+        field[rooms[0].yPosition+6][rooms[0].xPosition+4] = 0;
         Monster monster = new Monster(rooms[0].xPosition+20, rooms[0].yPosition+20);
         Monster monster2 = new Monster(rooms[0].xPosition+25, rooms[0].yPosition+25);
         Monster monster3 = new Monster(rooms[0].xPosition+15, rooms[0].yPosition+15);
@@ -175,17 +179,13 @@ public class MazeGenerator extends JComponent implements KeyListener {
         while (roomConnector.roomsConnected != roomConnector.roomsToConnect) {
             field = roomConnector.decideWhichWay(field, color, rooms[0].xPosition, rooms[0].yPosition);
         }
-        System.out.println("connected");
+        //System.out.println("connected");
         connector(field, color);
-        System.out.println("connected alt");
+        //System.out.println("connected alt");
         for (int i = 1; i < mazeHeight - 1; i++) {
             for (int cnt = 1; cnt < mazeWidth - 1; cnt++) {
                 first.removeDeadEnds(field, i, cnt);
             }
-        }
-        int x = 0;
-        while (x++<10){
-            System.out.println(x);
         }
         System.out.println("Initialized");
     }
@@ -309,6 +309,17 @@ public class MazeGenerator extends JComponent implements KeyListener {
         if(displayTimer>0){
             g.drawString(currentMessage,1200,200);
         }
+
+        //Draws the paths pathfinding uses
+
+        for(int y = 0; y<mazeHeight;y++){
+            for(int x = 0; x<mazeHeight;x++){
+                if(path[y][x]!=0){
+                    g.setColor(Color.GREEN);
+                    g.fillRect((x * size), y * size, size, size);
+                }
+            }
+        }
     }
 
     private static void placeRooms(Room[] rooms) {
@@ -340,7 +351,6 @@ public class MazeGenerator extends JComponent implements KeyListener {
                 roomHeight -= 3;
             }
             rooms[i] = new Room(roomWidth, roomHeight, dimensions, dimensions, 1, i + 10);
-
         }
         return rooms;
     }
