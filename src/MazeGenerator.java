@@ -100,7 +100,7 @@ public class MazeGenerator extends JComponent implements KeyListener {
 
             for (Monster monster: monsterList
             ) {
-                monster.update(player,field);
+                monster.update(player);
             }
             System.out.println("Logic processed");
             frame.repaint();

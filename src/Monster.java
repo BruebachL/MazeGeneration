@@ -4,11 +4,10 @@ import java.util.concurrent.CopyOnWriteArrayList;
 class Monster {
     int xPosition;
     int yPosition;
-    String heading = "north";
     int energy=0;
     int health = 100;
     private Deque<Tile> stack = new ArrayDeque<>();
-    public List<Tile> open = new CopyOnWriteArrayList<>(){
+    List<Tile> open = new CopyOnWriteArrayList<>(){
         @Override
         public boolean contains(Object o) {
             Tile toBeChecked = (Tile) o;
@@ -20,7 +19,7 @@ class Monster {
             return false;
         }
     };
-    public List<Tile> closed = new CopyOnWriteArrayList<>(){
+    List<Tile> closed = new CopyOnWriteArrayList<>(){
         @Override
         public boolean contains(Object o) {
             Tile toBeChecked = (Tile) o;
@@ -37,7 +36,7 @@ class Monster {
         this.xPosition = xPosition;
         this.yPosition = yPosition;
     }
-    void update(Player player, int[][] maze){
+    void update(Player player){
         if(health<=0){
             this.yPosition=998;
             this.xPosition=998;
@@ -56,25 +55,22 @@ class Monster {
             }
         }
     }
-    boolean axisCheck(Tile destination){
-        int xDistance = 0;
+    private boolean axisCheck(Tile destination){
+        int xDistance;
         if(destination.xPosition>this.xPosition){
             xDistance = destination.xPosition-this.xPosition;
         }else{
             xDistance = this.xPosition-destination.xPosition;
         }
-        int yDistance = 0;
+        int yDistance;
         if(destination.yPosition>this.yPosition){
             yDistance = destination.yPosition-this.yPosition;
         }else{
             yDistance = this.yPosition-destination.yPosition;
         }
-        if(xDistance>yDistance){
-            return false;
-        }
-        return true;
+        return xDistance <= yDistance;
     }
-    boolean playerInRange(Player player){
+    private boolean playerInRange(Player player){
         for(int i = this.xPosition-10;i<this.xPosition+10;i++){
             for(int cnt = this.yPosition-10; cnt<this.yPosition+10;cnt++){
                 if(i==player.xPosition&&cnt==player.yPosition){
@@ -84,7 +80,7 @@ class Monster {
         }
         return false;
     }
-    Tile[] getNeighbors(Tile end, Tile current){
+    private Tile[] getNeighbors(Tile end, Tile current){
         Tile north = new Tile(end, current, current.xPosition, current.yPosition - 1);
         Tile south = new Tile(end, current, current.xPosition, current.yPosition + 1);
         Tile east = new Tile(end, current, current.xPosition + 1, current.yPosition);
