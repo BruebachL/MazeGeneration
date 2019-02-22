@@ -4,27 +4,27 @@ import java.util.concurrent.CopyOnWriteArrayList;
 class Monster {
     int xPosition;
     int yPosition;
-    int energy=0;
+    int energy = 0;
     int health = 100;
     private Deque<Tile> stack = new ArrayDeque<>();
-    List<Tile> open = new CopyOnWriteArrayList<>(){
+    List<Tile> open = new CopyOnWriteArrayList<>() {
         @Override
         public boolean contains(Object o) {
             Tile toBeChecked = (Tile) o;
-            for(Tile current : closed){
-                if(current.xPosition==toBeChecked.xPosition&&current.yPosition==toBeChecked.yPosition){
+            for (Tile current : closed) {
+                if (current.xPosition == toBeChecked.xPosition && current.yPosition == toBeChecked.yPosition) {
                     return true;
                 }
             }
             return false;
         }
     };
-    List<Tile> closed = new CopyOnWriteArrayList<>(){
+    List<Tile> closed = new CopyOnWriteArrayList<>() {
         @Override
         public boolean contains(Object o) {
             Tile toBeChecked = (Tile) o;
-            for(Tile current : closed){
-                if(current.xPosition==toBeChecked.xPosition&&current.yPosition==toBeChecked.yPosition){
+            for (Tile current : closed) {
+                if (current.xPosition == toBeChecked.xPosition && current.yPosition == toBeChecked.yPosition) {
                     return true;
                 }
             }
@@ -36,121 +36,124 @@ class Monster {
         this.xPosition = xPosition;
         this.yPosition = yPosition;
     }
-    void update(Player player){
-        if(health<=0){
-            this.yPosition=998;
-            this.xPosition=998;
-        }else
-        if(playerInRange(player)){
-            if(energy>100) {
+
+    void update(Player player) {
+        if (health <= 0) {
+            this.yPosition = 998;
+            this.xPosition = 998;
+        } else if (playerInRange(player)) {
+            if (energy > 100) {
                 stack.clear();
                 this.aStar();
                 Tile moveTo = stack.getLast();
-                this.yPosition=moveTo.yPosition;
-                this.xPosition=moveTo.xPosition;
-                MazeGenerator.path[this.yPosition][this.xPosition]=0;
-                energy=0;
-            }else{
-                energy+=50;
+                this.yPosition = moveTo.yPosition;
+                this.xPosition = moveTo.xPosition;
+                MazeGenerator.path[this.yPosition][this.xPosition] = 0;
+                energy = 0;
+            } else {
+                energy += 50;
             }
         }
     }
-    private boolean axisCheck(Tile destination){
+
+    private boolean axisCheck(Tile destination) {
         int xDistance;
-        if(destination.xPosition>this.xPosition){
-            xDistance = destination.xPosition-this.xPosition;
-        }else{
-            xDistance = this.xPosition-destination.xPosition;
+        if (destination.xPosition > this.xPosition) {
+            xDistance = destination.xPosition - this.xPosition;
+        } else {
+            xDistance = this.xPosition - destination.xPosition;
         }
         int yDistance;
-        if(destination.yPosition>this.yPosition){
-            yDistance = destination.yPosition-this.yPosition;
-        }else{
-            yDistance = this.yPosition-destination.yPosition;
+        if (destination.yPosition > this.yPosition) {
+            yDistance = destination.yPosition - this.yPosition;
+        } else {
+            yDistance = this.yPosition - destination.yPosition;
         }
         return xDistance <= yDistance;
     }
-    private boolean playerInRange(Player player){
-        for(int i = this.xPosition-10;i<this.xPosition+10;i++){
-            for(int cnt = this.yPosition-10; cnt<this.yPosition+10;cnt++){
-                if(i==player.xPosition&&cnt==player.yPosition){
+
+    private boolean playerInRange(Player player) {
+        for (int i = this.xPosition - 200; i < this.xPosition + 200; i++) {
+            for (int cnt = this.yPosition - 200; cnt < this.yPosition + 200; cnt++) {
+                if (i == player.xPosition && cnt == player.yPosition) {
                     return true;
                 }
             }
         }
         return false;
     }
-    private Tile[] getNeighbors(Tile end, Tile current){
+
+    private Tile[] getNeighbors(Tile end, Tile current) {
         Tile north = new Tile(end, current, current.xPosition, current.yPosition - 1);
         Tile south = new Tile(end, current, current.xPosition, current.yPosition + 1);
         Tile east = new Tile(end, current, current.xPosition + 1, current.yPosition);
         Tile west = new Tile(end, current, current.xPosition - 1, current.yPosition);
-        if(axisCheck(end)) {
-            Tile[] neighbors = {east,west,north,south};
+        if (axisCheck(end)) {
+            Tile[] neighbors = {east, west, north, south};
             return neighbors;
-        }else{
-            Tile[] neighbors = {north,south,east,west};
+        } else {
+            Tile[] neighbors = {north, south, east, west};
             return neighbors;
         }
     }
-    void aStar(){
-        open = new CopyOnWriteArrayList<>(){
+
+    void aStar() {
+        open = new CopyOnWriteArrayList<>() {
             @Override
             public boolean contains(Object o) {
                 Tile toBeChecked = (Tile) o;
-                for(Tile current : open){
-                    if(current.xPosition==toBeChecked.xPosition&&current.yPosition==toBeChecked.yPosition){
+                for (Tile current : open) {
+                    if (current.xPosition == toBeChecked.xPosition && current.yPosition == toBeChecked.yPosition) {
                         return true;
                     }
                 }
                 return false;
             }
         };
-        closed = new CopyOnWriteArrayList<>(){
+        closed = new CopyOnWriteArrayList<>() {
             @Override
             public boolean contains(Object o) {
                 Tile toBeChecked = (Tile) o;
-                for(Tile current : closed){
-                    if(current.xPosition==toBeChecked.xPosition&&current.yPosition==toBeChecked.yPosition){
+                for (Tile current : closed) {
+                    if (current.xPosition == toBeChecked.xPosition && current.yPosition == toBeChecked.yPosition) {
                         return true;
                     }
                 }
                 return false;
             }
         };
-        Tile start = new Tile(this.xPosition,this.yPosition);
-        Tile end = new Tile(MazeGenerator.player.xPosition,MazeGenerator.player.yPosition);
+        Tile start = new Tile(this.xPosition, this.yPosition);
+        Tile end = new Tile(MazeGenerator.player.xPosition, MazeGenerator.player.yPosition);
         start.setH(end);
-        Tile current=start;
+        Tile current = start;
         open.add(start);
-        do{
+        do {
             System.out.println(open.size());
-            int lowestScore = 200;
-            for(Tile checked : open){
-                if(checked.f<lowestScore){
-                    current=checked;
+            int lowestScore = Integer.MAX_VALUE;
+            for (Tile checked : open) {
+                if (checked.f < lowestScore) {
+                    current = checked;
                     lowestScore = checked.f;
                 }
             }
             closed.add(current);
             open.remove(current);
 
-            if(closed.contains(end)){
+            if (closed.contains(end)) {
                 end.parent = current.parent;
                 MazeGenerator.path = new int[MazeGenerator.mazeHeight][MazeGenerator.mazeWidth];
-                while(current.parent!=null){
+                while (current.parent != null) {
                     stack.add(current);
-                    MazeGenerator.path[current.yPosition][current.xPosition]=1;
+                    MazeGenerator.path[current.yPosition][current.xPosition] = 1;
                     System.out.println("X: " + current.xPosition + " Y: " + current.yPosition);
                     current = current.parent;
 
                 }
-
-                MazeGenerator.path[end.yPosition][end.xPosition]=0;
+                MazeGenerator.path[end.yPosition][end.xPosition] = 0;
                 break;
             }
-            Tile[] neighbors = getNeighbors(end,current);
-            for(Tile neighbor : neighbors) {
+            Tile[] neighbors = getNeighbors(end, current);
+            for (Tile neighbor : neighbors) {
                 if (MazeGenerator.field[neighbor.yPosition][neighbor.xPosition] != 0) {
                     if (closed.contains(neighbor)) {
 
@@ -161,7 +164,7 @@ class Monster {
                     }
                 }
             }
-        }while(!open.isEmpty());
+        } while (!open.isEmpty());
     }
 }
 
